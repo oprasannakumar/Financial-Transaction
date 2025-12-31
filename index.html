@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Monthly Expenses</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root {
+  --primary: #2563eb;
+  --bg: #f4f6f8;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --text: #1f2937;
+  --muted: #6b7280;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  padding: 16px;
+  color: var(--text);
+}
+
+form {
+  background: var(--card);
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 430px;
+  margin: auto;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.section {
+  margin-top: 18px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 4px;
+}
+
+label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 10px;
+  display: block;
+}
+
+input, select {
+  width: 100%;
+  height: 44px;
+  padding: 10px;
+  margin-top: 6px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+}
+
+.radio-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.radio-group label {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.radio-group input {
+  display: none;
+}
+
+.radio-group input:checked + span {
+  color: #fff;
+  background: var(--primary);
+}
+
+.denoms {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.denoms input {
+  text-align: center;
+  font-weight: 600;
+  background: #f9fafb;
+}
+
+#amount {
+  font-size: 20px;
+  font-weight: 700;
+  text-align: right;
+  background: #f0f7ff;
+}
+
+button {
+  width: 100%;
+  height: 46px;
+  margin-top: 18px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .1s ease, background .2s;
+}
+
+button:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  form {
+    padding: 16px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<form id="expenseForm">
+<h2>Transaction Entry</h2>
+
+<div class="section">
+  <div class="section-title">Basic Details</div>
+
+  <label>Date</label>
+  <input type="date" id="date" required>
+
+  <label>Narration</label>
+  <input type="text" id="narration" required>
+
+  <label>Purpose</label>
+  <select id="purpose" required>
+    <option value="">Select</option>
+    <option>Food</option>
+    <option>Grocery</option>
+    <option>Hospital</option>
+    <option>House</option>
+    <option>Income</option>
+    <option>Loan</option>
+    <option>Travelling</option>
+    <option>Utility Bills</option>
+    <option>Other</option>
+  </select>
+
+  <input type="text" id="otherPurpose" class="hidden" placeholder="Enter custom purpose">
+</div>
+
+<div class="section">
+  <div class="section-title">Spent For</div>
+
+  <select id="spentFor" required>
+    <option value="">Select</option>
+    <option>Vasavi</option>
+    <option>Mother</option>
+    <option>Grand Father</option>
+    <option>Pedhamma</option>
+    <option>Chinnama</option>
+    <option>Srinivas Babai</option>
+    <option>Other</option>
+  </select>
+
+  <input type="text" id="otherSpentFor" class="hidden" placeholder="Enter name">
+</div>
+
+<div class="section">
+  <div class="section-title">Transaction</div>
+
+  <div class="radio-group">
+    <label>
+      <input type="radio" name="flow_type" value="deposit" required>
+      <span>Deposit</span>
+    </label>
+    <label>
+      <input type="radio" name="flow_type" value="withdraw">
+      <span>Withdraw</span>
+    </label>
+  </div>
+
+  <label>Transaction Type</label>
+  <select id="trtype" required>
+    <option value="">Select</option>
+    <option value="cash">Cash</option>
+    <option value="upi">UPI</option>
+    <option value="net">Net Banking</option>
+    <option value="debit">Debit</option>
+    <option value="credit">Credit</option>
+  </select>
+
+  <label id="accountLabel" class="hidden">From / To</label>
+  <select id="from_to" class="hidden"></select>
+</div>
+
+<div class="section hidden" id="denominationSection">
+  <div class="section-title">Cash Denominations</div>
+  <div class="denoms">
+    <input type="number" class="denom" data-val="10" placeholder="₹10">
+    <input type="number" class="denom" data-val="50" placeholder="₹50">
+    <input type="number" class="denom" data-val="100" placeholder="₹100">
+    <input type="number" class="denom" data-val="200" placeholder="₹200">
+    <input type="number" class="denom" data-val="500" placeholder="₹500">
+  </div>
+</div>
+
+<div class="section">
+  <label>Total Amount</label>
+  <input type="number" id="amount" required>
+</div>
+
+<button type="submit">Save Transaction</button>
+</form>
+
+<script>
+const purpose = document.getElementById("purpose");
+const otherPurpose = document.getElementById("otherPurpose");
+const spentFor = document.getElementById("spentFor");
+const otherSpentFor = document.getElementById("otherSpentFor");
+const trtype = document.getElementById("trtype");
+const denomInputs = document.querySelectorAll(".denom");
+const denomSection = document.getElementById("denominationSection");
+const amount = document.getElementById("amount");
+const fromTo = document.getElementById("from_to");
+const accountLabel = document.getElementById("accountLabel");
+
+purpose.onchange = () =>
+  otherPurpose.classList.toggle("hidden", purpose.value !== "Other");
+
+spentFor.onchange = () =>
+  otherSpentFor.classList.toggle("hidden", spentFor.value !== "Other");
+
+function calc() {
+  let t = 0;
+  denomInputs.forEach(d => t += (d.value || 0) * d.dataset.val);
+  amount.value = t;
+}
+
+trtype.onchange = () => {
+  if (trtype.value === "cash") {
+    denomSection.classList.remove("hidden");
+    amount.disabled = true;
+    denomInputs.forEach(d => d.oninput = calc);
+  } else {
+    denomSection.classList.add("hidden");
+    amount.disabled = false;
+  }
+};
+</script>
+
+</body>
+  </html>
