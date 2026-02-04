@@ -2,49 +2,163 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Clean Statement Explorer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Command Center</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
-        .container { max-width: 1400px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-        .toolbar { display: flex; gap: 20px; align-items: flex-end; margin-bottom: 30px; border-bottom: 1px solid #edf2f7; padding-bottom: 20px; }
-        .date-input { display: flex; flex-direction: column; gap: 6px; }
-        label { font-size: 11px; font-weight: 700; color: #718096; letter-spacing: 0.5px; }
-        input[type="date"] { padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; color: #2d3748; }
+        :root {
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --primary: #0f172a;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--bg); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 40px 20px;
+            line-height: 1.5;
+        }
+
+        .container { max-width: 1200px; margin: auto; }
+
+        /* Modern Dashboard Header */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+	.table-wrap {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+.back-nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    cursor: pointer;
+}
+        .stat-card.interactive { cursor: pointer; }
+        .stat-card.interactive:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            border-color: var(--accent);
+        }
+
+        .label { 
+            font-size: 12px; font-weight: 600; color: var(--text-muted); 
+            text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: block;
+        }
+
+        .value { font-size: 32px; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; }
         
-        button { padding: 10px 24px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn-blue { background: #3182ce; color: white; }
-        .btn-green { background: #38a169; color: white; display: none; }
-        .btn-red { background: #e53e3e; color: white; display: none; }
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        /* Cash Grid - Cleaner Style */
+        .cash-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 20px; }
+        .cash-item { background: var(--bg); padding: 8px; border-radius: 8px; text-align: center; border: 1px solid var(--border); }
+        .cash-label { display: block; font-size: 10px; color: var(--text-muted); font-weight: bold; }
+        .cash-qty { font-size: 14px; font-weight: 700; color: var(--primary); }
 
-        .sheet-card { margin-top: 30px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
-        .sheet-label { background: #2d3748; color: white; padding: 10px 15px; font-size: 14px; font-weight: 600; }
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { background: #f7fafc; padding: 14px; text-align: left; border-bottom: 2px solid #edf2f7; color: #4a5568; white-space: nowrap; }
-        td { padding: 12px 14px; border-bottom: 1px solid #edf2f7; color: #2d3748; white-space: nowrap; }
-        tr:hover { background: #f8fafc; }
+        /* Clean Toolbar */
+        .toolbar { 
+            display: flex; gap: 16px; align-items: flex-end; margin-bottom: 32px; 
+            background: var(--card-bg); padding: 24px; border-radius: 16px; border: 1px solid var(--border);
+        }
+        .date-input { display: flex; flex-direction: column; gap: 6px; }
+        label { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+        
+        input[type="date"] { 
+            border: 1px solid var(--border); padding: 10px 14px; border-radius: 8px; 
+            font-family: inherit; font-size: 14px; color: var(--text-main);
+        }
 
-        #status { font-weight: 600; color: #3182ce; margin-bottom: 15px; min-height: 20px; }
+        button { 
+            padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; 
+            font-size: 14px; cursor: pointer; transition: background 0.2s; 
+        }
+        .btn-blue { background: var(--primary); color: white; }
+        .btn-blue:hover { background: #334155; }
+        .btn-red { background: #fef2f2; color: var(--danger); }
+        .btn-red:hover { background: #fee2e2; }
+
+        /* Data Panels Style */
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+        .fin-panel {
+            background: var(--card-bg); border-radius: 16px; padding: 24px; 
+            border: 1px solid var(--border); box-shadow: var(--shadow);
+        }
+
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .panel-title { font-size: 15px; font-weight: 700; color: var(--primary); }
+        .panel-tag { font-size: 10px; background: #f1f5f9; color: var(--text-muted); padding: 4px 8px; border-radius: 6px; font-weight: 700; }
+        .panel-main-val { font-size: 28px; font-weight: 800; margin: 8px 0; letter-spacing: -0.03em; }
+
+        /* Simplified Table */
+        .sheet-card { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
+        .sheet-label { padding: 16px 24px; background: #f8fafc; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 700; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px 24px; font-size: 12px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+        td { padding: 16px 24px; font-size: 14px; border-bottom: 1px solid var(--border); color: var(--text-main); }
+        tr:last-child td { border: none; }
+
+        #status { font-size: 13px; color: var(--accent); margin-bottom: 16px; font-weight: 600; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="status">Ready.</div>
-    <div class="toolbar">
-        <div class="date-input">
-            <label>START DATE</label>
-            <input type="date" id="start">
+    <div id="status">Updating systems...</div>
+
+    <div class="dashboard">
+        <div class="stat-card interactive" onclick="viewNamedRange('Savings')">
+            <span class="label">Total Liquidity</span>
+            <div class="value" style="color: var(--success);" id="net-val">₹0.00</div>
         </div>
-        <div class="date-input">
-            <label>END DATE</label>
-            <input type="date" id="end">
+
+        <div class="stat-card interactive" onclick="viewNamedRange('CC')">
+            <span class="label">Credit Exposure</span>
+            <div class="value" style="color: var(--danger);" id="debt-val">₹0.00</div>
         </div>
-        <button class="btn-blue" onclick="loadMain()">Search Statement</button>
-        <button class="btn-green" id="fetchBtn" onclick="fetchAssociated()">Fetch Associated</button>
-        <button class="btn-red" id="deleteBtn" onclick="deleteRecords()">Global Delete</button>
+
+        <div class="stat-card">
+            <span class="label">Physical Cash: <span id="cash-total">₹0.00</span></span>
+            <div class="cash-grid" id="cash-grid"></div>
+        </div>
     </div>
+
+   <div class="toolbar">
+    <div class="date-input">
+        <label>Start Date</label>
+        <input type="date" id="start">
+    </div>
+    <div class="date-input">
+        <label>End Date</label>
+        <input type="date" id="end">
+    </div>
+    <button class="btn-blue" onclick="loadMain()">Execute Search</button>
+    <button class="btn-blue" id="fetchBtn" style="display:none; background: var(--accent);" onclick="fetchAssociated()">Fetch Associated</button>
+    <button class="btn-red" id="deleteBtn" style="display:none" onclick="deleteRecords()">Delete Selection</button>
+</div>
 
     <div id="displayArea"></div>
 </div>
@@ -52,88 +166,221 @@
 <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxeyI-iKfYu216UnB-6HBW1uuIwTzjykzOdLXaWK2JzxEl7XUF5ytr9hYWKmq4Batdtgg/exec';
 
+    window.onload = async () => {
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=getDashboard`);
+            const data = await res.json();
+            
+            document.getElementById('net-val').innerText = '₹' + data.liquidity.toLocaleString();
+            document.getElementById('debt-val').innerText = '₹' + data.debt.toLocaleString();
+            document.getElementById('cash-total').innerText = '₹' + data.cashBreakdown[10].toLocaleString();
+
+            const denoms = [500, 200, 100, 50, 20, 10, 5, 2, 1];
+            let gridHtml = "";
+            denoms.forEach((val, idx) => {
+                gridHtml += `<div class="cash-item"><span class="cash-label">${val}</span><span class="cash-qty">${data.cashBreakdown[idx+1]}</span></div>`;
+            });
+            document.getElementById('cash-grid').innerHTML = gridHtml;
+            document.getElementById('status').innerText = "Command Center Ready";
+        } catch(e) { document.getElementById('status').innerText = "Sync Failed"; }
+    };
+
     async function loadMain() {
         const s = document.getElementById('start').value;
         const e = document.getElementById('end').value;
         if(!s || !e) return alert("Select dates");
-
-        const status = document.getElementById('status');
-        status.innerText = "Processing records...";
-        document.getElementById('displayArea').innerHTML = "";
-        document.getElementById('deleteBtn').style.display = "none";
-        document.getElementById('fetchBtn').style.display = "none";
-
+        document.getElementById('status').innerText = "Searching...";
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getList&start=${s}&end=${e}`);
             const data = await res.json();
-            
             if (!data.rows || data.rows.length === 0) {
-                status.innerText = "No data found for this range.";
+                document.getElementById('status').innerText = "No records.";
                 return;
             }
-
-            let html = `<div class='sheet-card'><div class='sheet-label'>Full Statement</div><div class='table-container'><table><thead><tr><th>Select</th>`;
+            let html = `<div class='sheet-card'><div class='sheet-label'>Master Statement</div><table><thead><tr><th>Select</th>`;
             data.headers.forEach(h => html += `<th>${h}</th>`);
             html += `</tr></thead><tbody>`;
-            
             data.rows.forEach(row => {
                 const refId = row[row.length - 1];
                 html += `<tr><td><input type="checkbox" class="sel" value="${refId}" onchange="toggleButtons()"></td>`;
                 row.forEach(cell => html += `<td>${cell}</td>`);
                 html += `</tr>`;
             });
-            document.getElementById('displayArea').innerHTML = html + `</tbody></table></div></div>`;
-            status.innerText = "Statement loaded successfully.";
-        } catch(err) { status.innerText = "Connection error."; }
+            document.getElementById('displayArea').innerHTML = html + `</tbody></table></div>`;
+            document.getElementById('status').innerText = "Ready";
+        } catch(err) { document.getElementById('status').innerText = "Error"; }
     }
 
-    function toggleButtons() {
-        const checked = document.querySelectorAll('.sel:checked').length > 0;
-        document.getElementById('fetchBtn').style.display = checked ? "inline-block" : "none";
-        document.getElementById('deleteBtn').style.display = checked ? "inline-block" : "none";
-    }
+async function fetchAssociated() {
+    const checkboxes = document.querySelectorAll('.sel:checked');
+    const ids = Array.from(checkboxes).map(c => c.value.trim());
+    
+    if (ids.length === 0) return alert("Select at least one record to trace.");
 
-    async function fetchAssociated() {
-        const ids = Array.from(document.querySelectorAll('.sel:checked')).map(c => c.value.trim());
-        document.getElementById('status').innerText = "Analyzing all workbook sheets...";
-        try {
-            const res = await fetch(`${SCRIPT_URL}?action=fetchAssociated&ids=${encodeURIComponent(ids.join(','))}`);
-            const grouped = await res.json();
-            let finalHtml = "";
-            for (const name in grouped) {
-                const sheet = grouped[name];
-                finalHtml += `
-                    <div class="sheet-card">
-                        <div class="sheet-label">Sheet: ${name}</div>
-                        <div class="table-container">
-                            <table>
-                                <thead><tr>${sheet.headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
-                                <tbody>
-                                    ${sheet.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>`;
-            }
-            document.getElementById('displayArea').innerHTML = finalHtml || "No associated records discovered.";
-            document.getElementById('status').innerText = "Search complete.";
-        } catch(err) { document.getElementById('status').innerText = "Search failed."; }
-    }
+    const status = document.getElementById('status');
+    const displayArea = document.getElementById('displayArea');
+    
+    status.innerText = "Scanning all ledger sheets for Reference IDs...";
+    displayArea.innerHTML = "";
 
+    try {
+        const res = await fetch(`${SCRIPT_URL}?action=fetchAssociated&ids=${encodeURIComponent(ids.join(','))}`);
+        const grouped = await res.json();
+        
+        let finalHtml = "";
+        let foundAny = false;
+
+        for (const sheetName in grouped) {
+            foundAny = true;
+            const sheet = grouped[sheetName];
+            
+            finalHtml += `
+                <div class="sheet-card" style="margin-bottom: 30px;">
+                    <div class="sheet-label">Related Records: ${sheetName}</div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>${sheet.headers.map(h => `<th>${h}</th>`).join('')}</tr>
+                            </thead>
+                            <tbody>
+                                ${sheet.rows.map(row => `
+                                    <tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>`;
+        }
+
+        displayArea.innerHTML = finalHtml || "<div class='stat-card'>No associated records found in other sheets.</div>";
+        status.innerText = foundAny ? "Reference search complete." : "No cross-references found.";
+        
+    } catch (err) {
+        status.innerText = "Error executing reference search.";
+        console.error(err);
+    }
+}
+
+   async function viewNamedRange(rangeName) {
+    const status = document.getElementById('status');
+    const displayArea = document.getElementById('displayArea');
+    
+    status.innerText = `Syncing ${rangeName} Modules...`;
+    displayArea.innerHTML = ""; 
+
+    try {
+        const res = await fetch(`${SCRIPT_URL}?action=fetchNamedRange&range=${rangeName}`);
+        const data = await res.json();
+
+        let html = `<div class="card-grid">`;
+
+        data.rows.forEach((row, index) => {
+            const entityName = row[0];
+            const color = rangeName === 'Savings' ? 'var(--success)' : 'var(--danger)';
+            
+            // Cards now have a secondary onclick to filter the main ledger
+            html += `
+                <div class="fin-panel interactive" onclick="filterLedgerByEntity('${rangeName}', '${entityName}')">
+                    <div class="panel-header">
+                        <span class="panel-title">${entityName}</span>
+                        <span class="panel-tag">${rangeName === 'Savings' ? 'ASSET' : 'LIABILITY'}</span>
+                    </div>
+                    <div class="panel-main-val" style="color:${color}">₹${(Number(row[2]) || 0).toLocaleString('en-IN')}</div>
+                    <div style="font-size:11px; color:var(--text-muted); margin-top:5px;">
+                        Click to view statement history
+                    </div>
+                </div>`;
+        });
+
+        displayArea.innerHTML = html + "</div><div id='entityLedger' style='margin-top:40px'></div>";
+        status.innerText = `Select a ${rangeName} node to view transaction history.`;
+    } catch (e) { status.innerText = "Fetch Error."; }
+}
+async function filterLedgerByEntity(type, query) {
+    const status = document.getElementById('status');
+    const displayArea = document.getElementById('displayArea');
+    
+    status.innerText = `TERMINAL_BUSY: Fetching ${query} ledger...`;
+    
+    // 1. Clear the entire display area (removes all cards)
+    displayArea.innerHTML = "";
+
+    try {
+        const res = await fetch(`${SCRIPT_URL}?action=searchStatementByEntity&type=${type}&query=${encodeURIComponent(query)}`);
+        const result = await res.json();
+
+        // 2. Create Header with a Back Button
+        let html = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <button class="btn-blue" onclick="viewNamedRange('${type}')" style="background: #334155;">← Back to ${type}</button>
+                <div class="sheet-label" style="margin:0; border:none;">TRANSACTION_LOG: ${query.toUpperCase()}</div>
+            </div>`;
+
+        if (!result.rows || result.rows.length === 0) {
+            html += `<div class='stat-card'>No records found for "${query}" in Master Ledger.</div>`;
+            displayArea.innerHTML = html;
+            return;
+        }
+
+        // 3. Build the Table with Selectable Checkboxes
+        html += `
+            <div class='sheet-card'>
+                <div class='table-wrap'>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Select</th>
+                                ${result.headers.map(h => `<th>${h}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${result.rows.map(row => {
+                                const refId = row[row.length - 1]; // Assume last column is Ref ID
+                                return `
+                                    <tr>
+                                        <td><input type="checkbox" class="sel" value="${refId}" onchange="toggleButtons()"></td>
+                                        ${row.map(cell => `<td>${cell}</td>`).join('')}
+                                    </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>`;
+        
+        displayArea.innerHTML = html;
+        status.innerText = `Records for ${query} retrieved successfully.`;
+        
+        // Hide global action buttons initially until a row is selected
+        toggleButtons();
+
+    } catch (e) { 
+        status.innerText = "CRITICAL_ERROR: Search protocol failed."; 
+    }
+}
+  function toggleButtons() {
+    const checkedCount = document.querySelectorAll('.sel:checked').length;
+    const hasSelection = checkedCount > 0;
+    
+    document.getElementById('fetchBtn').style.display = hasSelection ? "inline-block" : "none";
+    document.getElementById('deleteBtn').style.display = hasSelection ? "inline-block" : "none";
+    
+    if(hasSelection) {
+        document.getElementById('status').innerText = `${checkedCount} record(s) selected for action.`;
+    }
+}
     async function deleteRecords() {
         const ids = Array.from(document.querySelectorAll('.sel:checked')).map(c => c.value.trim());
-        if (!confirm(`Warning: This will permanently delete records across ALL sheets. Proceed?`)) return;
-
-        document.getElementById('status').innerText = "Performing global deletion...";
+        if (!confirm(`Permanently delete records matching these IDs?`)) return;
+        document.getElementById('status').innerText = "Deleting...";
         try {
             await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 body: JSON.stringify({ action: 'deleteRows', ids: ids })
             });
-            document.getElementById('status').innerText = "Data removed. Refreshing view...";
+            document.getElementById('status').innerText = "Deleted. Refreshing...";
             setTimeout(loadMain, 2000);
-        } catch(err) { document.getElementById('status').innerText = "Deletion failed."; }
+        } catch(err) { document.getElementById('status').innerText = "Delete failed."; }
     }
 </script>
 </body>
