@@ -76,7 +76,12 @@
         .container { max-width: 1400px; margin: auto; }
 
         /* Dashboard HUD */
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .dashboard { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); /* Forces 3 columns for the top cards */
+    gap: 20px; 
+    margin-bottom: 30px; 
+}
         .stat-card {
             background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px);
             border-radius: 16px; padding: 20px; border: 1px solid var(--border); box-shadow: var(--shadow);
@@ -126,7 +131,12 @@
     color: var(--text-muted); 
     white-space: nowrap; /* Prevents label from wrapping */
 }
-
+#cash-grid { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); /* Changed from 5 to 3 */
+    gap: 6px; 
+    margin-top: 10px; 
+}
        .toolbar-metrics {
     display: flex; 
     gap: 24px; 
@@ -193,7 +203,12 @@
         .btn-red { background: rgba(251, 113, 133, 0.2); color: var(--danger); border: 1px solid var(--danger); }
         button:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; margin-top: 20px; }
+        .card-grid { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); /* Forces 3 columns for accounts */
+    gap: 15px; 
+    margin-top: 20px; 
+}
         .fin-panel {
             background: var(--surface); border-radius: 12px; padding: 20px; border: 1px solid var(--border);
             border-right: 3px solid transparent; cursor: pointer; transition: 0.2s;
@@ -277,22 +292,33 @@
         document.getElementById('bar-outflow').innerText = '₹' + outflow.toLocaleString('en-IN');
     }
 
-    window.onload = async () => {
-        try {
-            const res = await fetch(`${SCRIPT_URL}?action=getDashboard`);
-            const data = await res.json();
-            document.getElementById('net-val').innerText = '₹' + data.liquidity.toLocaleString('en-IN');
-            document.getElementById('debt-val').innerText = '₹' + data.debt.toLocaleString('en-IN');
-            document.getElementById('cash-total').innerText = '₹' + data.cashBreakdown[10].toLocaleString('en-IN');
-            
-            const denoms = [500, 200, 100, 50, 20, 10, 5, 2, 1];
-            let html = "";
-            denoms.forEach((v, i) => html += `<div style="font-size:10px; text-align:center; background:rgba(0,0,0,0.2); border-radius:4px; padding:2px;"><span style="color:var(--gold); display:block; font-size:8px;">${v}</span>${data.cashBreakdown[i+1]}</div>`);
-            document.getElementById('cash-grid').innerHTML = html;
-            document.getElementById('status').innerText = "Command Center Ready";
-        } catch(e) { document.getElementById('status').innerText = "Sync Failed"; }
-    };
-
+   window.onload = async () => {
+    try {
+        const res = await fetch(`${SCRIPT_URL}?action=getDashboard`);
+        const data = await res.json();
+        document.getElementById('net-val').innerText = '₹' + data.liquidity.toLocaleString('en-IN');
+        document.getElementById('debt-val').innerText = '₹' + data.debt.toLocaleString('en-IN');
+        document.getElementById('cash-total').innerText = '₹' + data.cashBreakdown[10].toLocaleString('en-IN');
+        
+        // Denominations list (Exactly 9 items for a 3x3 matrix)
+        const denoms = [500, 200, 100, 50, 20, 10, 5, 2, 1];
+        let html = "";
+        
+        denoms.forEach((v, i) => {
+            // Added a slightly more modern pill-style look for the 3x3 grid
+            html += `
+                <div style="font-size:11px; text-align:center; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:8px; padding:6px 2px;">
+                    <span style="color:var(--gold); display:block; font-size:9px; font-weight:800; margin-bottom:2px;">${v}</span>
+                    <span style="font-weight:600;">${data.cashBreakdown[i+1]}</span>
+                </div>`;
+        });
+        
+        document.getElementById('cash-grid').innerHTML = html;
+        document.getElementById('status').innerText = "Command Center Ready";
+    } catch(e) { 
+        document.getElementById('status').innerText = "Sync Failed"; 
+    }
+};
     async function loadMain() {
         const s = document.getElementById('start').value, e = document.getElementById('end').value;
         if(!s || !e) return alert("Select dates");
