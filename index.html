@@ -1,346 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Finance Dash Board | Cyber Hub</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-<style>
-  :root { 
-    --neon-blue: #00d2ff; --neon-cyan: #00ffff; --neon-red: #ff0055; --neon-green: #00ff88;
-    --cyber-black: #02040a; --border: rgba(255, 255, 255, 0.1);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { 
-    font-family: 'Inter', sans-serif; 
-    background: radial-gradient(circle at 50% 50%, #001a33 0%, #02040a 100%); 
-    color: #fff; 
-    min-height: 100vh; 
-    padding: 20px; 
-    background-attachment: fixed;
-  }
-  .wrapper { max-width: 1800px; margin: 0 auto; }
-  
-  /* --- Nav --- */
-  .top-nav { 
-    backdrop-filter: blur(20px); background: rgba(255, 255, 255, 0.03); 
-    border-radius: 20px; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;
-    border: 1px solid var(--border); margin-bottom: 20px; position: sticky; top: 10px; z-index: 1000;
-  }
-  .brand { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-  .logo { 
-    background: linear-gradient(135deg, var(--neon-blue), var(--neon-cyan)); 
-    width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
-    font-family: 'Orbitron', sans-serif; font-weight: 700; box-shadow: 0 0 15px var(--neon-blue); color: #000;
-  }
-  .brand h1 { font-family: 'Orbitron', sans-serif; font-size: 14px; letter-spacing: 2px; }
-  
-  .filter-hub { display: flex; gap: 10px; }
-  input[type="date"] { background: rgba(0,0,0,0.6); border: 1px solid var(--border); border-radius: 8px; color: #fff; padding: 8px; font-size: 11px; outline: none; }
-  button { 
-    background: var(--neon-blue); color: #000; font-weight: 800; padding: 8px 16px; border: none; border-radius: 8px; 
-    cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 10px; letter-spacing: 1px;
-  }
-  button:hover:not(:disabled) { box-shadow: 0 0 20px var(--neon-blue); transform: translateY(-1px); }
+    <meta charset="UTF-8">
+    <title>Clean Statement Explorer</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+        .container { max-width: 1400px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .toolbar { display: flex; gap: 20px; align-items: flex-end; margin-bottom: 30px; border-bottom: 1px solid #edf2f7; padding-bottom: 20px; }
+        .date-input { display: flex; flex-direction: column; gap: 6px; }
+        label { font-size: 11px; font-weight: 700; color: #718096; letter-spacing: 0.5px; }
+        input[type="date"] { padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; color: #2d3748; }
+        
+        button { padding: 10px 24px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-blue { background: #3182ce; color: white; }
+        .btn-green { background: #38a169; color: white; display: none; }
+        .btn-red { background: #e53e3e; color: white; display: none; }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
 
-  /* --- Top Metrics Bar --- */
-  .metrics-bar { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 20px; }
-  .neon-card { 
-    background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 12px; padding: 15px;
-    transition: 0.3s; position: relative; border-left: 3px solid transparent;
-  }
-  .neon-card.interactive:hover { background: rgba(255, 255, 255, 0.05); border-left-color: var(--neon-blue); cursor: pointer; }
-  .label { font-size: 7px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; font-weight: 700; display: block; margin-bottom: 5px; }
-  .value { font-family: 'Orbitron', sans-serif; font-size: 16px; color: #fff; }
+        .sheet-card { margin-top: 30px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+        .sheet-label { background: #2d3748; color: white; padding: 10px 15px; font-size: 14px; font-weight: 600; }
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: #f7fafc; padding: 14px; text-align: left; border-bottom: 2px solid #edf2f7; color: #4a5568; white-space: nowrap; }
+        td { padding: 12px 14px; border-bottom: 1px solid #edf2f7; color: #2d3748; white-space: nowrap; }
+        tr:hover { background: #f8fafc; }
 
-  /* --- MATRIX NODE PANEL --- */
-  .node-panel { 
-    background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border); border-radius: 15px; padding: 25px;
-    margin-bottom: 20px;
-  }
-  .panel-info { font-family: 'Orbitron', sans-serif; font-size: 11px; color: var(--neon-cyan); margin-bottom: 18px; letter-spacing: 2.5px; text-transform: uppercase; border-left: 4px solid var(--neon-cyan); padding-left: 12px; }
-  
-  #node-container { display: grid; gap: 18px; width: 100%; }
-  .matrix-cc { grid-template-columns: repeat(4, 1fr); } 
-  .matrix-savings { grid-template-columns: repeat(3, 1fr); } 
-  .matrix-cash { grid-template-columns: repeat(9, 1fr); }
-  
-  .mini-card { 
-    padding: 22px; border-radius: 15px; 
-    background: rgba(0,0,0,0.5); border: 1px solid var(--border);
-    transition: 0.3s; cursor: pointer; position: relative;
-    display: flex; flex-direction: column; align-items: center;
-  }
-  .mini-card:hover { border-color: var(--neon-cyan); background: rgba(0, 255, 255, 0.07); transform: translateY(-4px); }
-  
-  .acc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-  .acc-name { font-size: 13px; font-weight: 800; letter-spacing: 1.5px; color: var(--neon-cyan); }
-  
-  .data-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; width: 100%; }
-  .data-item { display: flex; flex-direction: column; }
-  
-  .data-label { font-size: 10px; text-transform: uppercase; color: rgba(255,255,255,0.7); margin-bottom: 5px; font-weight: 700; letter-spacing: 1px; }
-  .data-val { font-family: 'Orbitron', sans-serif; font-size: 14px; color: #fff; }
-  .primary-val { font-size: 16px; color: var(--neon-green); font-weight: 700; text-shadow: 0 0 10px rgba(0, 255, 136, 0.3); }
-
-  /* --- Table --- */
-  .container { background: rgba(0,0,0,0.4); border-radius: 20px; border: 1px solid var(--border); padding: 20px; min-height: 400px; }
-  .sheet-header { font-family: 'Orbitron', sans-serif; font-size: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; color: var(--neon-cyan); }
-  .table-scroll { overflow-x: auto; }
-  table { width: 100%; border-collapse: separate; border-spacing: 0 5px; }
-  th { padding: 12px 15px; text-align: left; font-size: 9px; text-transform: uppercase; color: rgba(255,255,255,0.3); border-bottom: 1px solid var(--border); }
-  td { padding: 12px 15px; background: rgba(255,255,255,0.01); font-size: 12px; transition: 0.2s; vertical-align: middle; }
-
-  .bank-tag { 
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 6px; border-radius: 8px; font-size: 9px; font-weight: 800; border: 1px solid currentColor;
-    line-height: 1.2; text-align: center; width: 110px; background: rgba(0,0,0,0.4);
-  }
-  .tag-hdfc { color: var(--neon-blue); } .tag-sbi { color: var(--neon-green); } .tag-icici { color: #ffa500; }
-  .amt-dep { color: var(--neon-green); font-weight: 700; }
-  .amt-with { color: var(--neon-red); font-weight: 700; }
-</style>
+        #status { font-weight: 600; color: #3182ce; margin-bottom: 15px; min-height: 20px; }
+    </style>
 </head>
-<body onload="initDashboard()">
+<body>
 
-<div class="wrapper">
-  <nav class="top-nav">
-    <div class="brand" onclick="location.reload()"><div class="logo">₹</div><h1>SYSTEM COMMAND</h1></div>
-    <div class="filter-hub">
-      <input type="date" id="from"> <input type="date" id="to">
-      <button onclick="fetchData()">Initialize</button>
-      <button id="traceBtn" onclick="traceSelected()" style="display:none; background:var(--neon-green);">Sync (<span id="trace-count">0</span>)</button>
-      <button id="deleteBtn" onclick="deleteSelected()" style="display:none; background:var(--neon-red); color: #fff;">Delete (<span id="del-count">0</span>)</button>
+<div class="container">
+    <div id="status">Ready.</div>
+    <div class="toolbar">
+        <div class="date-input">
+            <label>START DATE</label>
+            <input type="date" id="start">
+        </div>
+        <div class="date-input">
+            <label>END DATE</label>
+            <input type="date" id="end">
+        </div>
+        <button class="btn-blue" onclick="loadMain()">Search Statement</button>
+        <button class="btn-green" id="fetchBtn" onclick="fetchAssociated()">Fetch Associated</button>
+        <button class="btn-red" id="deleteBtn" onclick="deleteRecords()">Global Delete</button>
     </div>
-  </nav>
 
-  <section class="metrics-bar">
-    <div class="neon-card interactive" onclick="showAccounts('Savings')"><span class="label">Liquidity Pool</span><div id="raw-savings" class="value">₹0.00</div></div>
-    <div class="neon-card interactive" onclick="showAccounts('CC')"><span class="label">Credit Exposure</span><div id="raw-cc" class="value">₹0.00</div></div>
-    <div class="neon-card interactive" onclick="fetchCashDenoms()"><span class="label">Physical Cash</span><div id="raw-cash" class="value">₹0.00</div></div>
-    <div class="neon-card"><span class="label" style="color:var(--neon-blue)">Net Portfolio</span><div id="net-balance" class="value">₹0.00</div></div>
-    <div class="neon-card"><span class="label">Total Inflow</span><div id="total-dep" class="value amt-dep">₹0.00</div></div>
-    <div class="neon-card"><span class="label">Total Outflow</span><div id="total-with" class="value amt-with">₹0.00</div></div>
-  </section>
-
-  <div class="node-panel" id="node-panel" style="display: none;">
-    <div class="panel-info" id="panel-info">SYSTEM NODES</div>
-    <div id="node-container"></div>
-  </div>
-
-  <main id="result" class="container">
-    <div class="sheet-header">AWAITING SYSTEM UPLINK...</div>
-  </main>
+    <div id="displayArea"></div>
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxKAGEA92uCJ8TiHFB5jxpzPVcDK9OqnSxw-7-4jrsmW2sKQcdHVMiC83fofZAbJ5m1XA/exec";
-let selectionSet = new Set(), currentStats = { net: 0, rawS: 0, rawC: 0 };
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKAGEA92uCJ8TiHFB5jxpzPVcDK9OqnSxw-7-4jrsmW2sKQcdHVMiC83fofZAbJ5m1XA/exec';
 
-async function initDashboard() {
-  const r = await fetch(API_URL, { redirect: "follow" });
-  const res = await r.json();
-  currentStats = { net: res.netBalance, rawS: res.rawSavings, rawC: res.rawCC };
-  updateUI(0, 0);
-  // Auto-fetch total cash value for the metric card
-  fetchCashTotal();
-}
+    async function loadMain() {
+        const s = document.getElementById('start').value;
+        const e = document.getElementById('end').value;
+        if(!s || !e) return alert("Select dates");
 
-async function fetchCashTotal() {
-  const r = await fetch(`${API_URL}?rangeName=cashDenoms`, { redirect: "follow" });
-  const res = await r.json();
-  if (res.transactions && res.transactions.length > 0) {
-    const latest = res.transactions[res.transactions.length - 1].data;
-    let total = 0;
-    latest.forEach(item => {
-      const denom = parseInt(item.k);
-      const count = parseInt(item.v);
-      if(!isNaN(denom) && !isNaN(count)) total += (denom * count);
-    });
-    document.getElementById("raw-cash").innerText = formatCurr(total);
-  }
-}
+        const status = document.getElementById('status');
+        status.innerText = "Processing records...";
+        document.getElementById('displayArea').innerHTML = "";
+        document.getElementById('deleteBtn').style.display = "none";
+        document.getElementById('fetchBtn').style.display = "none";
 
-async function fetchCashDenoms() {
-  const panel = document.getElementById("node-panel");
-  const container = document.getElementById("node-container");
-  const info = document.getElementById("panel-info");
-  
-  panel.style.display = "block";
-  container.className = 'matrix-cash';
-  info.innerText = "CURRENT CASH DENOMINATIONS";
-  
-  container.innerHTML = "<div class='acc-name'>SCANNING VAULT...</div>";
-  const r = await fetch(`${API_URL}?rangeName=cashDenoms`, { redirect: "follow" });
-  const res = await r.json();
-  
-  container.innerHTML = "";
-  if (!res.transactions || res.transactions.length === 0) {
-    container.innerHTML = "<div class='acc-name'>NO CASH DATA</div>";
-    return;
-  }
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=getList&start=${s}&end=${e}`);
+            const data = await res.json();
+            
+            if (!data.rows || data.rows.length === 0) {
+                status.innerText = "No data found for this range.";
+                return;
+            }
 
-  // Get only the most recent entry
-  const latestEntry = res.transactions[res.transactions.length - 1].data;
-  
-  latestEntry.forEach(item => {
-    if (item.k.toLowerCase().includes("date")) return; // Skip date display inside cards
-    
-    const card = document.createElement("div");
-    card.className = "mini-card";
-    card.innerHTML = `
-      <span class="data-label">₹${item.k}</span>
-      <span class="primary-val">${item.v}</span>
-      <span class="data-label" style="font-size:8px; margin-top:5px;">Units</span>
-    `;
-    container.appendChild(card);
-  });
-}
-
-async function showAccounts(type) {
-  const panel = document.getElementById("node-panel");
-  const container = document.getElementById("node-container");
-  const info = document.getElementById("panel-info");
-  
-  panel.style.display = "block";
-  container.className = type === 'Savings' ? 'matrix-savings' : 'matrix-cc';
-  info.innerText = type === 'Savings' ? "ACTIVE LIQUIDITY NODES (3x3)" : "ACTIVE CREDIT NODES (4x3)";
-  
-  container.innerHTML = "<div class='acc-name'>SCANNING SYSTEM...</div>";
-  const r = await fetch(`${API_URL}?rangeName=${type}`, { redirect: "follow" });
-  const res = await r.json();
-  
-  container.innerHTML = "";
-  res.transactions.forEach(item => {
-    const d = item.data;
-    const name = d[0].v;
-    const card = document.createElement("div");
-    card.className = "mini-card";
-    card.onclick = () => traceAccount(name, type);
-
-    if (type === 'CC') {
-      const findVal = (key) => {
-        const entry = d.find(p => p.k.toLowerCase().trim().includes(key));
-        return entry ? parse(entry.v) : 0;
-      };
-      const usedVal = findVal('used');
-      const limitVal = findVal('limit');
-      const availVal = limitVal - usedVal;
-      card.innerHTML = `
-        <div class="acc-header"><span class="acc-name">${name}</span></div>
-        <div class="data-grid">
-          <div class="data-item"><span class="data-label">Used</span><span class="data-val" style="color:var(--neon-red)">${formatCurr(usedVal)}</span></div>
-          <div class="data-item"><span class="data-label">Available</span><span class="data-val" style="color:var(--neon-green)">${formatCurr(availVal)}</span></div>
-          <div class="data-item" style="grid-column: span 2"><span class="data-label">Total Limit</span><span class="data-val">${formatCurr(limitVal)}</span></div>
-        </div>`;
-    } else {
-      const currentVal = d.find(p => p.k.toLowerCase().trim().includes('current'))?.v || 0;
-      const openingVal = d.find(p => p.k.toLowerCase().trim().includes('opening'))?.v || 0;
-      card.innerHTML = `
-        <div class="acc-header"><span class="acc-name">${name}</span></div>
-        <div class="data-grid">
-          <div class="data-item"><span class="data-label">Opening</span><span class="data-val">${formatCurr(openingVal)}</span></div>
-          <div class="data-item"><span class="data-label">Current</span><span class="data-val primary-val">${formatCurr(currentVal)}</span></div>
-        </div>`;
+            let html = `<div class='sheet-card'><div class='sheet-label'>Full Statement</div><div class='table-container'><table><thead><tr><th>Select</th>`;
+            data.headers.forEach(h => html += `<th>${h}</th>`);
+            html += `</tr></thead><tbody>`;
+            
+            data.rows.forEach(row => {
+                const refId = row[row.length - 1];
+                html += `<tr><td><input type="checkbox" class="sel" value="${refId}" onchange="toggleButtons()"></td>`;
+                row.forEach(cell => html += `<td>${cell}</td>`);
+                html += `</tr>`;
+            });
+            document.getElementById('displayArea').innerHTML = html + `</tbody></table></div></div>`;
+            status.innerText = "Statement loaded successfully.";
+        } catch(err) { status.innerText = "Connection error."; }
     }
-    container.appendChild(card);
-  });
-}
 
-async function traceAccount(val, type) {
-  renderLoad(`TRACING NODE: ${val}`);
-  const source = (type === 'CC') ? 'CC' : 'Account';
-  const r = await fetch(`${API_URL}?action=trace&refId=${encodeURIComponent(val)}&source=${source}`, { redirect: "follow" });
-  const res = await r.json();
-  renderData(res.transactions);
-}
+    function toggleButtons() {
+        const checked = document.querySelectorAll('.sel:checked').length > 0;
+        document.getElementById('fetchBtn').style.display = checked ? "inline-block" : "none";
+        document.getElementById('deleteBtn').style.display = checked ? "inline-block" : "none";
+    }
 
-async function fetchData() {
-  selectionSet.clear();
-  const f = document.getElementById("from").value, t = document.getElementById("to").value;
-  if(!f || !t) return;
-  document.getElementById("node-panel").style.display = "none";
-  renderLoad("UPLINKING MASTER LOGS...");
-  const r = await fetch(`${API_URL}?from=${f}&to=${t}`, { redirect: "follow" });
-  const res = await r.json();
-  renderData(res.transactions);
-}
+    async function fetchAssociated() {
+        const ids = Array.from(document.querySelectorAll('.sel:checked')).map(c => c.value.trim());
+        document.getElementById('status').innerText = "Analyzing all workbook sheets...";
+        try {
+            const res = await fetch(`${SCRIPT_URL}?action=fetchAssociated&ids=${encodeURIComponent(ids.join(','))}`);
+            const grouped = await res.json();
+            let finalHtml = "";
+            for (const name in grouped) {
+                const sheet = grouped[name];
+                finalHtml += `
+                    <div class="sheet-card">
+                        <div class="sheet-label">Sheet: ${name}</div>
+                        <div class="table-container">
+                            <table>
+                                <thead><tr>${sheet.headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+                                <tbody>
+                                    ${sheet.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>`;
+            }
+            document.getElementById('displayArea').innerHTML = finalHtml || "No associated records discovered.";
+            document.getElementById('status').innerText = "Search complete.";
+        } catch(err) { document.getElementById('status').innerText = "Search failed."; }
+    }
 
-function renderData(data) {
-  const resultDiv = document.getElementById("result");
-  if(!data || data.length === 0) return resultDiv.innerHTML = "<div class='empty-state'>ZERO DATA PACKETS</div>";
-  resultDiv.innerHTML = "";
-  let gDep = 0, gWith = 0;
-  updateSelectCount();
-  const grouped = data.reduce((acc, item) => { if(!acc[item.SheetSource]) acc[item.SheetSource] = []; acc[item.SheetSource].push(item.data); return acc; }, {});
-  Object.keys(grouped).forEach(sheet => {
-    const rows = grouped[sheet], headers = rows[0].map(p => p.k);
-    const div = document.createElement("div");
-    div.innerHTML = `<div class="sheet-header"><span>// LOG: ${sheet.toUpperCase()}</span><span>${rows.length} UNITS FOUND</span></div>
-    <div class="table-scroll"><table><thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead>
-    <tbody>${rows.map(row => {
-      const refId = row[row.length - 1].v;
-      return `<tr class="row-interactive" onclick="toggleSelection(this, '${refId}')">${row.map((p, i) => {
-        let val = p.v, cls = "";
-        if(p.k.toLowerCase().includes('from')) {
-           let tagCls = val.toLowerCase().includes('hdfc') ? 'tag-hdfc' : val.toLowerCase().includes('sbi') ? 'tag-sbi' : 'tag-icici';
-           val = `<div class="bank-tag ${tagCls}"><span>${val.split(' ')[0]}</span><span>${val.split(' ')[1] || ''}</span></div>`;
-        }
-        if(i === 0 || p.k.toLowerCase().includes("date")) val = formatDate(val);
-        else if (!isNaN(parseFloat(String(val).replace(/[₹, \s]/g, "")))) val = formatCurr(val);
-        if(p.k.toLowerCase().includes("deposit")) { gDep += parse(p.v); cls = "amt-dep"; }
-        if(p.k.toLowerCase().includes("withdraw")) { gWith += parse(p.v); cls = "amt-with"; }
-        return `<td class="${cls}">${val || "—"}</td>`;
-      }).join("")}</tr>`;
-    }).join("")}</tbody></table></div>`;
-    resultDiv.appendChild(div);
-  });
-  updateUI(gDep, gWith);
-}
+    async function deleteRecords() {
+        const ids = Array.from(document.querySelectorAll('.sel:checked')).map(c => c.value.trim());
+        if (!confirm(`Warning: This will permanently delete records across ALL sheets. Proceed?`)) return;
 
-function toggleSelection(rowElement, refId) {
-  if (selectionSet.has(refId)) {
-    selectionSet.delete(refId);
-    rowElement.classList.remove('row-selected');
-  } else {
-    selectionSet.add(refId);
-    rowElement.classList.add('row-selected');
-  }
-  updateSelectCount();
-}
-
-function updateSelectCount() {
-  const c = selectionSet.size;
-  document.getElementById("traceBtn").style.display = (c > 0) ? "inline-flex" : "none";
-  document.getElementById("deleteBtn").style.display = (c > 0) ? "inline-flex" : "none";
-  document.getElementById("trace-count").innerText = c;
-  document.getElementById("del-count").innerText = c;
-}
-
-async function deleteSelected() {
-  const count = selectionSet.size;
-  if (!confirm(`CONFIRM DELETION OF ${count} DATA PACKETS?`)) return;
-  const ids = Array.from(selectionSet).join(",");
-  renderLoad(`PURGING DATA...`);
-  try {
-    const r = await fetch(`${API_URL}?action=delete&refId=${encodeURIComponent(ids)}`, { method: "GET", redirect: "follow" });
-    const res = await r.json();
-    if (res.status === "success") { alert(`CLEANED: ${res.deleted} UNITS.`); location.reload(); }
-  } catch (e) { alert("CONNECTION ERROR."); }
-}
-
-function updateUI(d, w) {
-  document.getElementById("raw-savings").innerText = formatCurr(currentStats.rawS);
-  document.getElementById("raw-cc").innerText = formatCurr(currentStats.rawC);
-  document.getElementById("net-balance").innerText = formatCurr(currentStats.net);
-  document.getElementById("total-dep").innerText = formatCurr(d);
-  document.getElementById("total-with").innerText = formatCurr(w);
-}
-
-function formatCurr(v) { let n = parseFloat(String(v || "").replace(/[₹, \s]/g, "")); return isNaN(n) ? v : "₹" + n.toLocaleString('en-IN', { minimumFractionDigits: 2 }); }
-function formatDate(d) { let date = new Date(d); return isNaN(date.getTime()) ? d : `${date.getDate()} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][date.getMonth()]} ${date.getFullYear()}`; }
-function parse(v){ return parseFloat(String(v||"").replace(/[₹, \s]/g,"")) || 0; }
-function renderLoad(m) { document.getElementById("result").innerHTML = `<div class="empty-state"><div style="color:var(--neon-cyan); text-shadow:0 0 10px var(--neon-cyan);">${m.toUpperCase()}</div></div>`; }
+        document.getElementById('status').innerText = "Performing global deletion...";
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'deleteRows', ids: ids })
+            });
+            document.getElementById('status').innerText = "Data removed. Refreshing view...";
+            setTimeout(loadMain, 2000);
+        } catch(err) { document.getElementById('status').innerText = "Deletion failed."; }
+    }
 </script>
 </body>
 </html>
