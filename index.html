@@ -713,19 +713,60 @@ function recalculateMetricsFromVisible() {
 
    async function fetchAssociated() {
     const ids = Array.from(document.querySelectorAll('.data-row.selected')).map(r => r.getAttribute('data-id'));
-    if (!ids.length) return;
+    if (!ids.length) return alert("Select at least one record to trace.");
 
     setProcessing(true, "Tracing References...");
     
     try {
         const res = await fetch(`${SCRIPT_URL}?action=fetchAssociated&ids=${encodeURIComponent(ids.join(','))}`);
         const grouped = await res.json();
-        // ... (your existing rendering logic) ...
+        
+        let finalHtml = `<div style="margin-bottom:20px;">
+                            <button class="btn-blue" onclick="loadMain()" style="background:var(--surface-accent); color:white;">← Back to Search</button>
+                         </div>`;
+        
+        let foundAny = false;
+
+        for (const sheetName in grouped) {
+            const sheet = grouped[sheetName];
+            if (sheet.rows.length > 0) {
+                foundAny = true;
+                finalHtml += `
+                    <div class="sheet-card" style="margin-bottom:30px; border-top:3px solid var(--primary);">
+                        <div style="padding:10px 20px; background:rgba(56, 189, 248, 0.1); color:var(--primary); font-weight:800; font-size:11px; letter-spacing:1px;">
+                            SOURCE_SHEET: ${sheetName.toUpperCase()}
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>${sheet.headers.map(h => `<th>${h}</th>`).join('')}</tr>
+                                </thead>
+                                <tbody>
+                                    ${sheet.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>`;
+            }
+        }
+
+        if (!foundAny) {
+            finalHtml = `
+                <div class="stat-card" style="text-align:center; padding:50px;">
+                    <div class="label">Trace Result</div>
+                    <div class="value" style="color:var(--danger); font-size:18px; margin-top:10px;">No cross-sheet references found for these IDs.</div>
+                    <button class="btn-blue" onclick="loadMain()" style="margin:20px auto 0;">Return to Ledger</button>
+                </div>`;
+        }
+
+        document.getElementById('displayArea').innerHTML = finalHtml;
         setProcessing(false);
         document.getElementById('status').innerText = "Trace Complete";
     } catch(e) { 
+        console.error(e);
         setProcessing(false);
         document.getElementById('status').innerText = "Trace Failed"; 
+        alert("Error tracing IDs. Check console for details.");
     }
 }
 
