@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finance Command Center | v3.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <style>
         :root {
             --bg: #030712;
@@ -41,7 +43,25 @@
     border: 1px solid var(--primary-glow);
     animation: menuFadeIn 0.4s ease-out;
 }
+.forms-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: rgba(244,63,94,0.15);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
 
+.forms-close-btn:hover {
+    background: var(--danger);
+    color: white;
+    box-shadow: 0 0 12px rgba(244,63,94,0.6);
+}
 .trace-table-wrap {
     overflow-x: auto;
     /* This allows the table to grow vertically based on content */
@@ -59,7 +79,29 @@
     color: var(--gold);
     text-align: center;
 }
+.filter-search-input {
+    width: 95%;
+    box-sizing: border-box;   /* 🔥 important */
+    margin-bottom: 8px;
+    font-size: 11px;
+    height: 30px;
+    padding: 6px 8px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    
+}
 
+.filter-options-container {
+    max-height: 250px;
+    overflow-y: auto;
+    margin-top: 4px;
+}
+.filter-search-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-glow);
+}
 .trace-table-wrap th,
 .trace-table-wrap td {
     text-align: center !important;
@@ -226,7 +268,7 @@
         .stat-card {
             background: var(--surface);
             backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--border);
+            border: 0.5px solid #10b981;
             border-radius: 5px;min-width:300px
             padding: 20px;
             position: relative;
@@ -261,7 +303,7 @@
     top: 8px;      /* Adjust this to bring it further DOWN */
     right: 8px;    /* Adjust this to bring it further LEFT */
     color: var(--gold) !important;
-    font-size: 8px;
+    font-size: 15px;
     font-weight: 800;
     font-family: 'JetBrains Mono', monospace;
 }
@@ -271,32 +313,35 @@
         /* Cash Breakdown Grid */
        #cash-grid { 
     display: grid; 
-    grid-template-columns: repeat(3, 1fr); /* 3 narrow columns */
-    gap: 3px; 
-    margin-top: 12px; min-width:5px;
+    grid-template-columns: repeat(3, 1fr);
+    justify-content: center;
+    gap: 6px; 
+    margin-top: 12px;
+	padding-left:10px;padding-right:10px;
 }
         .denom-tile {
     background: rgba(0, 0, 0, 0.3);
-    padding: 6px 3px;
+    padding: 4px 6px;
     border-radius: 6px;
     display: flex;
-    justify-content: space-between;
+    justify-content:space-between;
     align-items: center;
     font-size: 11px;
     font-family: 'JetBrains Mono', monospace;
-    border: 1px solid var(--border);
-    transition: 0.2s;gap:10px;
+    border: 1px solid var(--border);margin-bottom:10px;
+    transition: 0.2s;gap:6px;min-widht:5px;
     /* This makes the card narrow and clean */
-    min-width:5px; 
 }/* Color Coding for specific denominations */
-.denom-tile[data-v="500"] { border-left: 3px solid #fbbf24; } /* Gold */
-.denom-tile[data-v="200"] { border-left: 3px solid #f472b6; } /* Pink */
-.denom-tile[data-v="100"] { border-left: 3px solid #60a5fa; } /* Blue */
-.denom-tile[data-v="50"]  { border-left: 3px solid #4ade80; } /* Green */
-.denom-tile[data-v="20"]  { border-left: 3px solid #a78bfa; } /* Purple */
-.denom-tile:not([data-v="500"]):not([data-v="200"]):not([data-v="100"]):not([data-v="50"]):not([data-v="20"]) { 
-    border-left: 3px solid var(--text-muted); 
-}
+.denom-tile[data-v="500"] { border: 3px solid #fbbf24; } /* Gold */
+.denom-tile[data-v="200"] { border: 3px solid #fbbf24; } /* Gold */
+.denom-tile[data-v="100"] { border: 3px solid #fbbf24; } /* Gold */
+.denom-tile[data-v="50"]  { border: 3px solid #C0C0C0; } /* Silver */
+.denom-tile[data-v="20"]  { border: 3px solid #C0C0C0; } /* Silver*/
+.denom-tile[data-v="10"]  { border: 3px solid #C0C0C0; } /* Silver */
+.denom-tile[data-v="5"]  { border: 3px solid #B87333; } /* Copper */
+.denom-tile[data-v="2"]  { border: 3px solid #B87333; } /* Copper */
+.denom-tile[data-v="1"]  { border: 3px solid #B87333; } /* Copper */
+
 
         /* --- Unified Toolbar --- */
         .toolbar {
@@ -315,8 +360,36 @@
         }
 
         .controls-group { display: flex; align-items: center; gap: 12px; flex-grow: 1; }
+        .range-input {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    color: white;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    transition: 0.2s;
+    min-width: 220px;
+    cursor: pointer;
+}
+.range-input {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    color: white;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    transition: 0.2s;
+    min-width: 220px;
+    cursor: pointer;
+}
 
-        select, input[type="date"], input[type="number"], .table-search-box input {
+/* Focus effect */
+.range-input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--primary-glow);
+}
+        select, .table-search-box input {
             background: rgba(0,0,0,0.3);
             border: 1px solid var(--border);
             color: white;
@@ -345,7 +418,7 @@
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: space-between;max-widht:120px;
         }
 thead th {
     position: sticky;
@@ -401,6 +474,101 @@ tbody {
     transform: scale(1.05);
     border-color: var(--primary);
 }
+/* ===== ADVANCED FORMS POPUP ===== */
+
+.forms-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(12px);
+    z-index: 99999;
+    animation: fadeInOverlay 0.25s ease forwards;
+}
+
+@keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.forms-container {
+    position: relative;   /* 🔥 important */
+    width: 50%;
+    height: 92vh;
+    max-height: 92vh;
+    background: linear-gradient(
+        145deg,
+        rgba(30,41,59,0.98),
+        rgba(15,23,42,0.99)
+    );
+    border-radius: 24px;
+    border: 1px solid var(--primary);
+    box-shadow: 0 40px 120px rgba(0,0,0,0.85);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+@keyframes popupScale {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Header */
+.forms-header {
+    padding: 14px 20px;
+}
+
+.forms-tabs {
+    padding: 10px 20px;
+    gap: 12px;
+}
+.forms-header button {
+    background: rgba(244,63,94,0.1);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+.forms-header button:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* Tabs */
+.forms-tabs {
+    display: flex;
+    gap: 14px;              /* ← Proper gap */
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+}
+
+.forms-tabs button {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 12px;
+    transition: 0.2s ease;
+}
+
+.forms-tabs button:hover {
+    background: var(--primary);
+    color: var(--bg);
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+#formsFrame {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #000;
+}
 
         td { padding: 14px 20px; font-size: 13px; border-bottom: 1px solid var(--border); }
 /* Increase width of first column */
@@ -408,6 +576,25 @@ tbody {
 #mainDataTable td:first-child {
     min-width: 100px;   /* Adjust this value */
     width: 100px;
+}
+#tableFilter {
+    width: 30%;
+    padding-left: 36px;
+    position: relative;
+}
+
+.table-search-box {
+    position: relative;
+}
+
+.table-search-box::before {
+    content: "🔎";
+    position: absolute;
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    opacity: 0.6;
 }
 /* Increase width of 8th and 9th columns */
 #mainDataTable th:nth-child(8),
@@ -482,6 +669,7 @@ tbody {
         }
         .fin-panel:hover { border-color: var(--primary); background: var(--surface-bright); transform: scale(1.02); }
 
+
     </style>
 </head>
 <body>
@@ -518,21 +706,15 @@ tbody {
         <option value="">📁 Select Module</option>
     </select>
 
-            <select id="monthSelect" onchange="autoFillDates()">
-                <option value="">Select Month</option>
-                <option value="0">January</option><option value="1">February</option>
-                <option value="2">March</option><option value="3">April</option>
-                <option value="4">May</option><option value="5">June</option>
-                <option value="6">July</option><option value="7">August</option>
-                <option value="8">September</option><option value="9">October</option>
-                <option value="10">November</option><option value="11">December</option>
-            </select>
-            <input type="number" id="yearSelect" value="2026" onchange="autoFillDates()" style="width: 70px;">
-            <input type="date" id="start">
-            <input type="date" id="end">
+       <input type="text" id="dateRange" class="range-input"
+       placeholder="Select Date Range"
+       readonly>
             <button class="btn-blue" onclick="loadMain()">Execute Search</button>
             <button class="btn-accent" onclick="loadFullStatement()">Full History</button>
-        </div>
+	    <button class="btn-red" onclick="logout()">Logout</button>
+       <div style="margin-left: 20px;">
+    <button class="btn-accent" onclick="openFormsPopup()">📝 Forms</button>
+</div>
         <div id="action-buttons-holder" style="display: flex; gap: 8px;"></div>
     </div>
 
@@ -545,6 +727,31 @@ tbody {
     let navStack = []; 
     let currentViewType = 'Savings'; 
     let currentTableMode = 'statement';
+    let selectedStart = "";
+    let selectedEnd = "";
+document.addEventListener("DOMContentLoaded", function () {
+    flatpickr("#dateRange", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        onClose: function(selectedDates) {
+
+            if (selectedDates.length === 2) {
+
+                const toLocalISO = (date) => {
+                    const y = date.getFullYear();
+                    const m = String(date.getMonth() + 1).padStart(2, '0');
+                    const d = String(date.getDate()).padStart(2, '0');
+                    return `${y}-${m}-${d}`;
+                };
+
+                selectedStart = toLocalISO(selectedDates[0]);
+                selectedEnd   = toLocalISO(selectedDates[1]);
+
+                console.log("Selected Range:", selectedStart, "to", selectedEnd);
+            }
+        }
+    });
+});
 
     // Helper to get token for every request
     const getAuthParams = () => `&token=${sessionStorage.getItem("session_token")}`;
@@ -599,25 +806,33 @@ tbody {
             netEl.style.color = netPosition < 0 ? 'var(--danger)' : 'var(--primary)';
 
             document.getElementById('cash-total').innerText = '₹' + data.cashBreakdown[10].toLocaleString('en-IN');
-            
-            const denoms = [500, 200, 100, 50, 20, 10, 5, 2, 1];
-            let html = "";
-            denoms.forEach((v, i) => {
-                const count = data.cashBreakdown[i+1] || 0;
-                html += `<div class="denom-tile" data-v="${v}">
-                            <span class="denom-value">₹${v}</span>
-                            <span class="denom-count">${count}</span>
-                        </div>`;
-            });
-            document.getElementById('cash-grid').innerHTML = html;
-            document.getElementById('status').innerText = "System Online // Authorized";
-            loadSheetList()
-            adjustTableHeight();
-            
-        } catch(e) { 
-            document.getElementById('status').innerText = "Sync Failed: Token Invalid"; 
-        }
+        
+        // Reordered to create vertical columns: 500/50/5, 200/20/2, 100/10/1
+        const denoms = [500, 50, 5, 200, 20, 2, 100, 10, 1];
+        
+        // Mapping key for data retrieval since the source array is likely still [500, 200, 100...]
+        // Adjust the index lookup to match the original index of these values in your Apps Script data
+        const sourceMap = { 500:1, 200:2, 100:3, 50:4, 20:5, 10:6, 5:7, 2:8, 1:9 };
+
+        let html = "";
+        denoms.forEach((v) => {
+            const dataIndex = sourceMap[v]; 
+            const count = data.cashBreakdown[dataIndex] || 0;
+            html += `<div class="denom-tile" data-v="${v}">
+                        <span class="denom-value">₹${v}</span>
+                        <span class="denom-count">${count}</span>
+                    </div>`;
+        });
+        
+        document.getElementById('cash-grid').innerHTML = html;
+        document.getElementById('status').innerText = "System Online // Authorized";
+        loadSheetList();
+        adjustTableHeight();
+        
+    } catch(e) { 
+        document.getElementById('status').innerText = "Sync Failed: Token Invalid"; 
     }
+}
 async function loadSheetList() {
     try {
         const res = await fetch(`${SCRIPT_URL}?action=getSheets${getAuthParams()}`);
@@ -635,67 +850,100 @@ async function loadSheetList() {
 
 // --- 3. EXECUTE SEARCH (With Token) ---
 async function loadMain() {
+
     const selectedSheet = document.getElementById('sheetSelect').value;
-    const s = document.getElementById('start').value;
-    const e = document.getElementById('end').value;
-    
-    // --- MODE 1: Fetch Raw Data from a Specific Sheet ---
+    const s = selectedStart;
+    const e = selectedEnd;
+
+    // CASE 1: Sheet + Date Range
+    if (selectedSheet !== "" && s && e) {
+        setProcessing(true, `ACCESSING ${selectedSheet} // FILTERING RANGE...`);
+
+        try {
+            const res = await fetch(
+                `${SCRIPT_URL}?action=fetchSheetWithDate` +
+                `&sheetName=${encodeURIComponent(selectedSheet)}` +
+                `&start=${s}&end=${e}` +
+                getAuthParams()
+            );
+
+            const data = await res.json();
+
+            currentTableMode = 'registry';
+            renderTable(data.headers, data.rows);
+
+            setProcessing(false);
+            document.getElementById('status').innerText =
+                `Source: ${selectedSheet} // Range Applied`;
+
+        } catch (e) {
+            setProcessing(false);
+            document.getElementById('status').innerText =
+                "Sync Error: Date Filter Failed";
+        }
+
+        return;
+    }
+
+    // CASE 2: Only Sheet
     if (selectedSheet !== "") {
         setProcessing(true, `ACCESSING MODULE: ${selectedSheet.toUpperCase()}...`);
+
         try {
-            const res = await fetch(`${SCRIPT_URL}?action=fetchRawSheet&sheetName=${encodeURIComponent(selectedSheet)}${getAuthParams()}`);
+            const res = await fetch(
+                `${SCRIPT_URL}?action=fetchRawSheet` +
+                `&sheetName=${encodeURIComponent(selectedSheet)}` +
+                getAuthParams()
+            );
+
             const data = await res.json();
-            
-            // Setting mode to 'registry' prevents the table from trying to 
-            // force specific ledger-only date formatting if the sheet structure is different.
-            currentTableMode = 'registry'; 
-            
+
+            currentTableMode = 'registry';
             renderTable(data.headers, data.rows);
-            
-            // Reset toolbar metrics as they are ledger-specific
-            document.getElementById('bar-inflow').innerText = '₹0';
-            document.getElementById('bar-outflow').innerText = '₹0';
-            
+
             setProcessing(false);
-            document.getElementById('status').innerText = `Source: ${selectedSheet}`;
-        } catch (e) { 
+            document.getElementById('status').innerText =
+                `Source: ${selectedSheet}`;
+
+        } catch (e) {
             setProcessing(false);
-            document.getElementById('status').innerText = "Sync Error: Sheet Unreachable";
-            console.error(e);
+            document.getElementById('status').innerText =
+                "Sync Error: Sheet Unreachable";
         }
-        return; // Exit here so it doesn't try to run the date filter logic
+
+        return;
     }
 
-    // --- MODE 2: Standard Date-Filtered Ledger Search ---
+    // CASE 3: Only Date (Ledger Mode)
     if (!s || !e) {
-        return alert("OPERATIONAL OVERRIDE: Please select a Date Range or a specific Module.");
+        return alert("Select a Sheet or a Date Range.");
     }
-    
+
     setProcessing(true, "RETRIEVING LEDGER DATA...");
-    currentTableMode = 'statement';
-    
+
     try {
-        const res = await fetch(`${SCRIPT_URL}?action=getList&start=${s}&end=${e}${getAuthParams()}`);
+        const res = await fetch(
+            `${SCRIPT_URL}?action=getList&start=${s}&end=${e}` +
+            getAuthParams()
+        );
+
         const data = await res.json();
-        
+
+        currentTableMode = 'statement';
         renderTable(data.headers, data.rows);
         updateToolbarMetrics(data.headers, data.rows);
-        
+
         setProcessing(false);
-        document.getElementById('status').innerText = "Sync Complete // Ledger View";
-    } catch (e) { 
+        document.getElementById('status').innerText =
+            "Ledger View // Range Applied";
+
+    } catch (e) {
         setProcessing(false);
-        document.getElementById('status').innerText = "Sync Error: Ledger Data Offline"; 
-        console.error(e);
+        document.getElementById('status').innerText =
+            "Sync Error: Ledger Data Offline";
     }
 }
-    
 
-// --- 4. VIEW REGISTRY (With Token) ---
-    // --- 4. VIEW REGISTRY (With Token Handshake) ---
-// --- 4. VIEW REGISTRY (With Token Handshake & Opening Balances) ---
-// --- 4. VIEW REGISTRY (Optimized Bar Placement) ---
-// --- 4. VIEW REGISTRY (With Over-Capacity Logic & Security Handshake) ---
 async function viewNamedRange(rangeName) {
     currentViewType = rangeName;
     currentTableMode = 'registry';
@@ -895,19 +1143,10 @@ function autoFillDates() {
 }
 
 function loadFullStatement() {
-    const startInput = document.getElementById('start');
-    const endInput = document.getElementById('end');
-    
-    // Set range to a wide window
-    startInput.value = "2020-01-01";
-    
-    const today = new Date().toISOString().split('T')[0];
-    endInput.value = today;
-
-    // Reuse your existing main fetch logic
+    selectedStart = "2020-01-01";
+    selectedEnd = new Date().toISOString().split('T')[0];
     loadMain();
 }
-
 function setProcessing(isProcessing, message = "EXECUTING...") {
     const overlay = document.getElementById('processing-overlay');
     const status = document.getElementById('status');
@@ -938,7 +1177,7 @@ function renderTable(headers, rows) {
     <div class='sheet-card'>
         <div class="table-search-box">
             <div style="display:flex; align-items:center; gap:15px; flex-grow:1;">
-                <input type="text" id="tableFilter" placeholder="Search Terminal..." onkeyup="applyMultiFilter()" style="max-width:300px;">
+                <input type="text" id="tableFilter" placeholder="Search Terminal..." onkeyup="applyMultiFilter()">
                 <span id="rowCount" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--text-muted);">READY_</span>
             </div>
             <div style="display: flex; gap: 15px;">
@@ -958,15 +1197,33 @@ function renderTable(headers, rows) {
                                     <span>${h}</span>
                                     <span class="filter-trigger" onclick="toggleFilterDropdown(event, '${fieldName}')">▼</span>
                                 </div>
-                                <div id="filter-dropdown-${fieldName}" class="filter-dropdown">
-                                    <div id="options-container-${fieldName}" class="filter-options-container"></div>
-                                    <div style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px;">
-                                        <button class="btn-accent" style="width:100%; font-size:10px; height:32px; justify-content:center;" 
-                                                onclick="clearFilter('${fieldName}')">
-                                            RESET COLUMN
-                                        </button>
-                                    </div>
-                                </div>
+                               <div id="filter-dropdown-${fieldName}" class="filter-dropdown">
+
+    <!-- 🔎 Search inside filter -->
+    <input type="text"
+       class="filter-search-input"
+       placeholder="Search..."
+       onkeyup="filterColumnOptions('${fieldName}', this.value)">
+
+
+    <div id="options-container-${fieldName}" 
+         class="filter-options-container"></div>
+
+    <div style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px; display:flex; gap:6px;">
+        <button class="btn-blue"
+                style="flex:1; font-size:10px; height:32px; justify-content:center;"
+                onclick="confirmFilter('${fieldName}')">
+            CONFIRM
+        </button>
+        <button class="btn-accent"
+                style="flex:1; font-size:10px; height:32px; justify-content:center;"
+                onclick="clearFilter('${fieldName}')">
+            RESET
+        </button>
+    </div>
+
+</div>
+
                             </th>`;
                         }).join('')}
                     </tr>
@@ -975,7 +1232,7 @@ function renderTable(headers, rows) {
                     ${rows.map(row => {
                         const rawId = row[idColIdx];
                         const rowId = (rawId !== undefined && rawId !== null) ? String(rawId).trim() : "";
-                        const clickAction = isRegistry ? `filterLedgerByEntity('${row[0]}')` : `handleRowClick(this)`;
+                       const clickAction = `handleRowClick(this)`;
 
                         return `
                             <tr class="data-row" data-id="${rowId}" onclick="${clickAction}">
@@ -1004,6 +1261,33 @@ function renderTable(headers, rows) {
     setTimeout(adjustTableHeight, 50);
     populateFilterOptions(headers, rows);
     recalculateMetricsFromVisible();
+}
+
+function filterColumnOptions(fieldName, query) {
+    query = query.toLowerCase().trim();
+
+    const container = document.getElementById(`options-container-${fieldName}`);
+    if (!container) return;
+
+    const options = container.querySelectorAll('.filter-option');
+
+    options.forEach(opt => {
+        const value = opt.getAttribute('data-value');
+        if (!query || value.includes(query)) {
+            opt.style.display = '';
+        } else {
+            opt.style.display = 'none';
+        }
+    });
+}
+
+
+function confirmFilter(fieldName) {
+    applyMultiFilter();
+    
+    // Optional: auto-close dropdown after confirm
+    const dropdown = document.getElementById(`filter-dropdown-${fieldName}`);
+    if (dropdown) dropdown.style.display = 'none';
 }
 
 function applyMultiFilter() {
@@ -1103,11 +1387,7 @@ function populateFilterOptions(headers, rows) {
     });
 }
 function toggleFilterChip(element) {
-    // Toggle the visual class
     element.classList.toggle('selected');
-    
-    // Immediately apply the filter logic
-    applyMultiFilter();
 }
 function applyMultiFilter() {
     const query = document.getElementById('tableFilter').value.toLowerCase();
@@ -1165,9 +1445,19 @@ function clearFilter(fieldName) {
     applyMultiFilter();
 }
 
-// Close dropdowns when clicking outside
-document.addEventListener('click', () => {
-    document.querySelectorAll('.filter-dropdown').forEach(d => d.style.display = 'none');
+document.addEventListener('click', function(e) {
+
+    // If click is inside dropdown or on filter trigger → do nothing
+    if (
+        e.target.closest('.filter-dropdown') ||
+        e.target.closest('.filter-trigger')
+    ) {
+        return;
+    }
+
+    // Otherwise close all dropdowns
+    document.querySelectorAll('.filter-dropdown')
+            .forEach(d => d.style.display = 'none');
 });
 
 function applyTableFilter() {
@@ -1384,13 +1674,6 @@ function toggleButtons() {
 }
 
 
-// Add this to your existing script section
-document.addEventListener('contextmenu', function(e) {
-    const row = e.target.closest('.data-row');
-    if (row) {
-        e.preventDefault(); // Prevent the default browser menu
-    }
-});
 
 async function copyRowToClipboard(rowElement) {
     const table = document.getElementById('mainDataTable');
@@ -1586,12 +1869,6 @@ async function executeCommand(type) {
     }
 }
 
-// --- Desktop: Right Click ---
-document.addEventListener('contextmenu', function(e) {
-    const row = e.target.closest('.data-row');
-    if (row) showContextMenu(e, row);
-});
-
 // --- Mobile: Long Press Logic ---
 document.addEventListener('touchstart', function(e) {
     const row = e.target.closest('.data-row');
@@ -1627,7 +1904,140 @@ document.addEventListener('touchend', () => clearTimeout(pressTimer));
 document.addEventListener('touchmove', () => clearTimeout(pressTimer));
 window.addEventListener("resize", adjustTableHeight);
 window.addEventListener("load", adjustTableHeight);
+
+function showLogoutScreen() {
+
+    document.body.innerHTML = `
+    <div style="
+        height:100vh;
+        background: radial-gradient(circle at 50% 0%, #1e293b 0%, #030712 100%);
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        font-family:'JetBrains Mono';
+        color:white;
+        overflow:hidden;
+        position:relative;
+    ">
+
+        <div id="floating-transactions"></div>
+
+        <h1 style="
+            font-size:42px;
+            letter-spacing:4px;
+            margin-bottom:20px;
+            color:var(--primary);
+        ">
+            NODE LOCKED
+        </h1>
+
+        <button class="btn-blue" onclick="location.reload()">
+            🔐 LOGIN
+        </button>
+
+    </div>
+    `;
+
+    startTransactionAnimation();
+}
+function startTransactionAnimation() {
+
+    const container = document.getElementById("floating-transactions");
+
+    const transactions = [
+        "₹5,000 Credit",
+        "₹1,250 Debit",
+        "₹15,000 Deposit",
+        "₹3,200 Withdrawal",
+        "₹22,000 Credit",
+        "₹780 Debit"
+    ];
+
+    setInterval(() => {
+        const div = document.createElement("div");
+        div.innerText = transactions[Math.floor(Math.random() * transactions.length)];
+
+        div.style.position = "absolute";
+        div.style.left = Math.random() * 100 + "vw";
+        div.style.bottom = "-40px";
+        div.style.fontSize = "14px";
+        div.style.opacity = "0.7";
+        div.style.color = "rgba(14,165,233,0.7)";
+        div.style.transition = "transform 6s linear, opacity 6s linear";
+
+        container.appendChild(div);
+
+        setTimeout(() => {
+            div.style.transform = "translateY(-110vh)";
+            div.style.opacity = "0";
+        }, 50);
+
+        setTimeout(() => {
+            div.remove();
+        }, 6000);
+
+    }, 800);
+}
+
+
+function logout() {
+    sessionStorage.removeItem("finance_auth_v3");
+    sessionStorage.removeItem("session_token");
+    showLogoutScreen();
+}
+function openFormsPopup() {
+    const modal = document.getElementById("formsModal");
+    modal.style.display = "flex";
+    loadForm("self");
+
+    // Disable background scroll for true popup feel
+    document.body.style.overflow = "hidden";
+}
+
+function closeFormsPopup() {
+    const modal = document.getElementById("formsModal");
+    modal.style.display = "none";
+    document.getElementById("formsFrame").src = "";
+    document.body.style.overflow = "auto";
+}
+
+function loadForm(type) {
+
+    const urls = {
+        self: "https://oprasannakumar.github.io/Self-TransferGoogleScripts/",
+        loan: "https://oprasannakumar.github.io/LoanTransferGoogleSheets/",
+        monthly: "https://oprasannakumar.github.io/MonthlytransactionsGoogleSheets/"
+    };
+
+    document.getElementById("formsFrame").src = urls[type];
+}
+
+// Close on ESC key
+document.addEventListener("keydown", function(e){
+    if(e.key === "Escape") closeFormsPopup();
+});
+
 </script>
 <div id="custom-context-menu"></div>
+<!-- ===== FORMS POPUP MODAL ===== -->
+<div id="formsModal" class="forms-modal">
+    <div class="forms-container">
+        
+    <div class="forms-header">
+    🚀 Command Forms
+</div>
+<button class="forms-close-btn" onclick="closeFormsPopup()">✕</button>
+        <div class="forms-tabs">
+            <button onclick="loadForm('self')">Self Transfer</button>
+            <button onclick="loadForm('loan')">Loan Transfer</button>
+            <button onclick="loadForm('monthly')">Monthly Transaction</button>
+        </div>
+
+        <iframe id="formsFrame" src="" frameborder="0"></iframe>
+
+    </div>
+</div>
+
 </body>
 </html>
