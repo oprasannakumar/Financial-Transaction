@@ -1,6 +1,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,31 +38,14 @@
         background: var(--primary);
         color: var(--bg);
     }
+
 /* Trace View specific: Remove fixed height constraints */
 .trace-card {
     margin-bottom: 32px;
     border: 1px solid var(--primary-glow);
     animation: menuFadeIn 0.4s ease-out;
 }
-.forms-close-btn {
-    position: absolute;
-    top: 16px;
-    right: 20px;
-    background: rgba(244,63,94,0.15);
-    border: 1px solid var(--danger);
-    color: var(--danger);
-    font-size: 14px;
-    padding: 6px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
 
-.forms-close-btn:hover {
-    background: var(--danger);
-    color: white;
-    box-shadow: 0 0 12px rgba(244,63,94,0.6);
-}
 .trace-table-wrap {
     overflow-x: auto;
     /* This allows the table to grow vertically based on content */
@@ -257,26 +241,35 @@
         }
 
         /* --- Futuristic Stat Cards --- */
-        .dashboard { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 5px; 
-            margin-bottom: 24px;
-            max-width:5000px;
-        }
+        .dashboard {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 30px;
+    position: relative;
+}
+button {
+    min-height: 44px; /* proper mobile tap size */
+}
 
-        .stat-card {
-            background: var(--surface);
-            backdrop-filter: var(--glass-blur);
-            border: 0.5px solid #10b981;
-            border-radius: 5px;min-width:300px
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+.stat-card,
+.fin-panel {
+    min-height: 100px;
+}
 
-.header-content {
+.dashboard::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(14,165,233,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14,165,233,0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    animation: gridShift 20s linear infinite;
+}
+
+       .header-content {
     display: flex;
     align-items: center;
     justify-content: center; /* Keeps text centered */
@@ -287,28 +280,79 @@
 .header-content span {
     white-space: nowrap; /* Prevents header text from wrapping */
 }
-        .stat-card::before {
-            content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary); opacity: 0; transition: 0.3s;
-        }
 
-        .stat-card.interactive:hover {
-            transform: translateY(-5px);
-            background: var(--surface-bright);
-            box-shadow: 0 10px 30px -10px var(--primary-glow);
-        }
+.stat-card {
+    position: relative;
+    background: rgba(15,23,42,0.7);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(14,165,233,0.2);
+    border-radius: 20px;
+    padding: 24px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
 
-        .stat-card.interactive:hover::before { opacity: 1; }
-#cash-total {
+/* Neon Edge Glow */
+.stat-card::before {
+    content: "";
     position: absolute;
-    top: 8px;      /* Adjust this to bring it further DOWN */
-    right: 8px;    /* Adjust this to bring it further LEFT */
-    color: var(--gold) !important;
-    font-size: 15px;
+    inset: 0;
+    border-radius: 18px;
+    padding: 1px;
+    background: linear-gradient(
+        120deg,
+        rgba(14,165,233,0.8),
+        transparent,
+        rgba(14,165,233,0.8)
+    );
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.4;
+}
+
+/* Hover Effect */
+.stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 40px rgba(14,165,233,0.3);
+    border-color: var(--primary);
+}
+
+/* Tactical Label */
+.stat-card .label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+/* Animated Value */
+.stat-card .value {
+    font-size: 30px;
     font-weight: 800;
     font-family: 'JetBrains Mono', monospace;
+    position: relative;
+    z-index: 2;
 }
-        .stat-card .label { font-size: 10px; font-weight: 800; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 8px; padding-left:10px;}
-        .stat-card .value { font-size: 26px; font-weight: 800; font-family: 'JetBrains Mono', monospace; padding-left:10px;}
+
+/* Pulse animation for live values */
+.stat-card .value::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+    background: radial-gradient(
+        circle,
+        rgba(14,165,233,0.4) 0%,
+        transparent 70%
+    );
+    opacity: 0;
+    animation: valuePulse 3s ease-in-out infinite;
+}
 
         /* Cash Breakdown Grid */
        #cash-grid { 
@@ -474,101 +518,6 @@ tbody {
     transform: scale(1.05);
     border-color: var(--primary);
 }
-/* ===== ADVANCED FORMS POPUP ===== */
-
-.forms-modal {
-    position: fixed;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(12px);
-    z-index: 99999;
-    animation: fadeInOverlay 0.25s ease forwards;
-}
-
-@keyframes fadeInOverlay {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.forms-container {
-    position: relative;   /* 🔥 important */
-    width: 50%;
-    height: 92vh;
-    max-height: 92vh;
-    background: linear-gradient(
-        145deg,
-        rgba(30,41,59,0.98),
-        rgba(15,23,42,0.99)
-    );
-    border-radius: 24px;
-    border: 1px solid var(--primary);
-    box-shadow: 0 40px 120px rgba(0,0,0,0.85);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-@keyframes popupScale {
-    from { transform: scale(0.9); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
-
-/* Header */
-.forms-header {
-    padding: 14px 20px;
-}
-
-.forms-tabs {
-    padding: 10px 20px;
-    gap: 12px;
-}
-.forms-header button {
-    background: rgba(244,63,94,0.1);
-    border: 1px solid var(--danger);
-    color: var(--danger);
-    border-radius: 8px;
-    padding: 6px 10px;
-    font-size: 12px;
-}
-
-.forms-header button:hover {
-    background: var(--danger);
-    color: white;
-}
-
-/* Tabs */
-.forms-tabs {
-    display: flex;
-    gap: 14px;              /* ← Proper gap */
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--border);
-    background: rgba(255,255,255,0.02);
-}
-
-.forms-tabs button {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--border);
-    padding: 8px 16px;
-    border-radius: 12px;
-    font-size: 12px;
-    transition: 0.2s ease;
-}
-
-.forms-tabs button:hover {
-    background: var(--primary);
-    color: var(--bg);
-    box-shadow: 0 0 15px var(--primary-glow);
-}
-
-#formsFrame {
-    flex: 1;
-    width: 100%;
-    height: 100%;
-    border: none;
-    background: #000;
-}
 
         td { padding: 14px 20px; font-size: 13px; border-bottom: 1px solid var(--border); }
 /* Increase width of first column */
@@ -596,6 +545,65 @@ tbody {
     font-size: 14px;
     opacity: 0.6;
 }
+/* ===== FUTURISTIC CONTROL BUTTON ===== */
+
+.btn-future {
+    position: relative;
+    padding: 10px 22px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    color: var(--primary);
+    background: rgba(14,165,233,0.05);
+    border: 1px solid var(--primary);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* Neon Glow Border */
+.btn-future::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    box-shadow: 0 0 15px var(--primary-glow);
+    opacity: 0;
+    transition: 0.3s;
+}
+
+/* Energy Sweep Effect */
+.btn-future::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(14,165,233,0.4),
+        transparent
+    );
+    transition: 0.6s;
+}
+
+/* Hover */
+.btn-future:hover {
+    background: rgba(14,165,233,0.15);
+    transform: translateY(-2px);
+}
+
+.btn-future:hover::before {
+    opacity: 1;
+}
+
+.btn-future:hover::after {
+    left: 100%;
+}
+
 /* Increase width of 8th and 9th columns */
 #mainDataTable th:nth-child(8),
 #mainDataTable td:nth-child(8),
@@ -625,11 +633,89 @@ tbody {
         .btn-blue { background: var(--primary); color: #fff; box-shadow: 0 4px 14px 0 var(--primary-glow); }
         .btn-blue:hover { transform: translateY(-2px); box-shadow: 0 6px 20px 0 var(--primary-glow); }
 
-        .btn-accent { background: transparent; border: 1px solid var(--border); color: #fff; }
-        .btn-accent:hover { background: var(--surface-bright); }
+        .corner-accent {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(
+        135deg,
+        var(--primary),
+        transparent
+    );
+    opacity: 0.15;
+}
 
-        .btn-red { background: rgba(244, 63, 94, 0.1); border: 1px solid var(--danger); color: var(--danger); }
-        .btn-red:hover { background: var(--danger); color: white; }
+
+        /* ===== FUTURISTIC DANGER BUTTON ===== */
+
+.btn-future-danger {
+    position: relative;
+    padding: 10px 22px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    color: var(--danger);
+    background: rgba(244,63,94,0.05);
+    border: 1px solid var(--danger);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* Red Glow Border */
+.btn-future-danger::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    box-shadow: 0 0 15px rgba(244,63,94,0.4);
+    opacity: 0;
+    transition: 0.3s;
+}
+
+/* Energy Sweep Effect */
+.btn-future-danger::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(244,63,94,0.4),
+        transparent
+    );
+    transition: 0.6s;
+}
+
+/* Hover */
+.btn-future-danger:hover {
+    background: rgba(244,63,94,0.15);
+    transform: translateY(-2px);
+}
+
+.btn-future-danger:hover::before {
+    opacity: 1;
+}
+
+.btn-future-danger:hover::after {
+    left: 100%;
+}
+.stat-card {
+    position: relative;
+    background: rgba(15,23,42,0.7);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(14,165,233,0.2);
+    border-radius: 18px;
+    padding: 24px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
 
         /* --- Processing Overlay --- */
         #processing-overlay {
@@ -646,7 +732,10 @@ tbody {
 .denom-value { color: #a2b4f9; font-weight: 600; font-size: 12px; }
 .denom-count { color: var(--text); font-weight: 800; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
+  	@keyframes gridShift {
+    0% { background-position: 0 0; }
+    100% { background-position: 40px 40px; }
+}
         /* Pill Metrics */
         .metric-pill { background: rgba(0,0,0,0.3); padding: 8px 16px; border-radius: 12px; border: 1px solid var(--border); }
         .pill-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; display: block; }
@@ -660,15 +749,156 @@ tbody {
 
         /* Grid for Accounts (Registry View) */
         .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; padding: 20px 0; }
-        .fin-panel {
-            background: var(--surface);
-            border-radius: 20px;
-            padding: 24px;
-            border: 1px solid var(--border);
-            transition: 0.3s;
-        }
-        .fin-panel:hover { border-color: var(--primary); background: var(--surface-bright); transform: scale(1.02); }
+/* ===== FUTURISTIC VAULT PANELS (Savings / CC) ===== */
 
+.fin-panel {
+    position: relative;
+    background: rgba(15,23,42,0.75);
+    backdrop-filter: blur(18px);
+    border-radius: 20px;
+    padding: 28px;
+    border: 1px solid rgba(14,165,233,0.15);
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
+
+/* Neon Edge Border */
+.fin-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    padding: 1px;
+    background: linear-gradient(
+        120deg,
+        rgba(14,165,233,0.8),
+        transparent,
+        rgba(14,165,233,0.8)
+    );
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.3;
+}
+
+/* Hover Lift */
+.fin-panel:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 0 45px rgba(14,165,233,0.25);
+    border-color: var(--primary);
+}
+
+/* Animated Background Grid */
+.fin-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(14,165,233,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14,165,233,0.04) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+    opacity: 0.4;
+}
+.fin-panel .label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.fin-panel > div:nth-child(2) {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+
+/* =========================================
+   RESPONSIVE MOBILE OPTIMIZATION
+========================================= */
+
+@media (max-width: 1200px) {
+    .dashboard {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+
+    body {
+        padding: 14px;
+    }
+
+    /* Dashboard becomes 1 column */
+    .dashboard {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .stat-card {
+        padding: 18px;
+    }
+
+    /* Toolbar becomes vertical stack */
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 14px;
+        position: static; /* disable sticky on mobile */
+    }
+
+    .controls-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .controls-group select,
+    .controls-group input,
+    .controls-group button {
+        width: 100% !important;
+    }
+
+    /* Buttons full width */
+    .btn-future,
+    .btn-future-danger {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Reduce font sizes slightly */
+    .stat-card .value {
+        font-size: 22px;
+    }
+
+    .pill-val {
+        font-size: 13px;
+    }
+
+    /* Forms menu adjust */
+    #forms-menu {
+        width: 90%;
+        left: 5% !important;
+    }
+
+    /* Table container better mobile behavior */
+    .table-wrap {
+        border-radius: 14px;
+    }
+
+    #mainDataTable {
+        min-width: 900px; /* allow horizontal scroll */
+    }
+
+    .table-search-box {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
 
     </style>
 </head>
@@ -683,7 +913,8 @@ tbody {
 
     <div class="dashboard">
         <div class="stat-card interactive" onclick="viewNamedRange('Savings')">
-            <span class="label">Liquidity Pool</span>
+                 <div class="corner-accent"></div>
+		<span class="label">Liquidity Pool</span>
             <div class="value" style="color: var(--success);" id="net-val">₹0</div>
         </div>
         <div class="stat-card interactive" onclick="viewNamedRange('CC')">
@@ -709,12 +940,11 @@ tbody {
        <input type="text" id="dateRange" class="range-input"
        placeholder="Select Date Range"
        readonly>
-            <button class="btn-blue" onclick="loadMain()">Execute Search</button>
-            <button class="btn-accent" onclick="loadFullStatement()">Full History</button>
-	    <button class="btn-red" onclick="logout()">Logout</button>
-       <div style="margin-left: 20px;">
-    <button class="btn-accent" onclick="openFormsPopup()">📝 Forms</button>
-</div>
+            <button class="btn-future" onclick="loadMain()">Execute Search</button>
+            <button class="btn-future" onclick="loadFullStatement()">Full History</button>
+	    <button class="btn-future" onclick="toggleFormsMenu(event)">Forms</button>
+	    <button class="btn-future-danger" onclick="logout()">Logout</button>
+        </div>
         <div id="action-buttons-holder" style="display: flex; gap: 8px;"></div>
     </div>
 
@@ -1021,7 +1251,7 @@ async function viewNamedRange(rangeName) {
                     <div class="label" style="margin-bottom:4px;">${isSavings ? 'ASSET' : 'LIABILITY'}</div>
                     <div style="font-size:16px; font-weight:700; letter-spacing:0.5px;">${name}</div>
                     
-                    <div style="font-size:28px; font-weight:800; color:${themeColor}; margin:8px 0 2px 0; font-family:'JetBrains Mono';">
+                   <div class="vault-balance" style="color:${themeColor};">
                         ₹${currentBalance.toLocaleString('en-IN')}
                     </div>
 
@@ -1980,63 +2210,63 @@ function startTransactionAnimation() {
     }, 800);
 }
 
+function toggleFormsMenu(e) {
+    e.stopPropagation();
+
+    const menu = document.getElementById("forms-menu");
+    const rect = e.target.getBoundingClientRect();
+
+    if (menu.style.display === "block") {
+        menu.style.display = "none";
+        return;
+    }
+
+    menu.style.display = "block";
+    menu.style.left = rect.left + "px";
+    menu.style.top = (rect.bottom + window.scrollY + 8) + "px";
+}
+
+function openFormLink(type) {
+
+    const urls = {
+        monthly: "https://oprasannakumar.github.io/MonthlytransactionsGoogleSheets/",
+        loan: "https://oprasannakumar.github.io/LoanTransferGoogleSheets/",
+        self: "https://oprasannakumar.github.io/Self-TransferGoogleScripts/"
+    };
+
+    window.open(urls[type], "_blank");
+
+    document.getElementById("forms-menu").style.display = "none";
+}
+
+document.addEventListener("click", function(e) {
+    if (!e.target.closest("#forms-menu")) {
+        document.getElementById("forms-menu").style.display = "none";
+    }
+});
 
 function logout() {
     sessionStorage.removeItem("finance_auth_v3");
     sessionStorage.removeItem("session_token");
     showLogoutScreen();
 }
-function openFormsPopup() {
-    const modal = document.getElementById("formsModal");
-    modal.style.display = "flex";
-    loadForm("self");
-
-    // Disable background scroll for true popup feel
-    document.body.style.overflow = "hidden";
-}
-
-function closeFormsPopup() {
-    const modal = document.getElementById("formsModal");
-    modal.style.display = "none";
-    document.getElementById("formsFrame").src = "";
-    document.body.style.overflow = "auto";
-}
-
-function loadForm(type) {
-
-    const urls = {
-        self: "https://oprasannakumar.github.io/Self-TransferGoogleScripts/",
-        loan: "https://oprasannakumar.github.io/LoanTransferGoogleSheets/",
-        monthly: "https://oprasannakumar.github.io/MonthlytransactionsGoogleSheets/"
-    };
-
-    document.getElementById("formsFrame").src = urls[type];
-}
-
-// Close on ESC key
-document.addEventListener("keydown", function(e){
-    if(e.key === "Escape") closeFormsPopup();
-});
-
 </script>
 <div id="custom-context-menu"></div>
-<!-- ===== FORMS POPUP MODAL ===== -->
-<div id="formsModal" class="forms-modal">
-    <div class="forms-container">
-        
-    <div class="forms-header">
-    🚀 Command Forms
-</div>
-<button class="forms-close-btn" onclick="closeFormsPopup()">✕</button>
-        <div class="forms-tabs">
-            <button onclick="loadForm('self')">Self Transfer</button>
-            <button onclick="loadForm('loan')">Loan Transfer</button>
-            <button onclick="loadForm('monthly')">Monthly Transaction</button>
-        </div>
-
-        <iframe id="formsFrame" src="" frameborder="0"></iframe>
-
-    </div>
+<div id="forms-menu" style="
+    position:absolute;
+    display:none;
+    background:rgba(15,23,42,0.95);
+    backdrop-filter:blur(12px);
+    border:1px solid var(--primary);
+    border-radius:12px;
+    padding:10px 0;
+    min-width:220px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.8);
+    z-index:10000;
+">
+    <div class="menu-item" onclick="openFormLink('monthly')">📊 Monthly Transaction</div>
+    <div class="menu-item" onclick="openFormLink('loan')">💳 Loan Entry</div>
+    <div class="menu-item" onclick="openFormLink('self')">🔁 Self Transfer</div>
 </div>
 
 </body>
