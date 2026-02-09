@@ -1,7 +1,4 @@
 
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,6 +24,68 @@
             --card-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
             --glass-blur: blur(12px);
         }
+#fab-menu {
+    position: absolute;
+    bottom: 75px;
+    right: 0;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 220px;
+    opacity: 0;
+    transform: scale(0.8);
+    transform-origin: bottom right;
+    transition: 0.3s cubic-bezier(.34,1.56,.64,1);
+    pointer-events: none;
+}
+
+#fab-menu.open {
+    display: flex;
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+/* Reset default positioning */
+#fab-menu {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 220px;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: 0.3s cubic-bezier(.34,1.56,.64,1);
+    pointer-events: none;
+}
+
+/* When active */
+#fab-menu.open {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+/* Directional positioning */
+
+#fab-menu.open-left {
+    right: 70px;
+    left: auto;
+}
+
+#fab-menu.open-right {
+    left: 70px;
+    right: auto;
+}
+
+#fab-menu.open-up {
+    bottom: 0;
+    top: auto;
+}
+
+#fab-menu.open-down {
+    top: 0;
+    bottom: auto;
+}
+
 .filter-trigger {
         font-size: 9px;
         padding: 4px;
@@ -248,16 +307,158 @@
     margin-bottom: 30px;
     position: relative;
 }
-button {
-    min-height: 44px; /* proper mobile tap size */
+/* ===== FLOATING ACTION BUTTON ===== */
+
+#fab-container {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 9999;
 }
 
-.stat-card,
-.fin-panel {
-    min-height: 100px;
+/* Main Circle Button */
+#fab-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+
+    /* Glass surface */
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(18px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+    color: var(--primary);
+
+    cursor: pointer;
+
+    border: 3px solid rgba(14,165,233,1.5);
+
+    box-shadow:
+        0 0 20px rgba(14,165,233,0.15),
+        inset 0 0 15px rgba(14,165,233,0.08);
+
+    transition:
+        transform 0.35s cubic-bezier(.34,1.56,.64,1),
+        box-shadow 0.3s ease,
+        background 0.3s ease,
+        color 0.3s ease;
 }
 
-.dashboard::before {
+/* Subtle hover */
+#fab-button:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow:
+        0 0 35px rgba(14,165,233,0.35),
+        inset 0 0 20px rgba(14,165,233,0.15);
+}
+
+/* Active (menu open) */
+#fab-button.active {
+    color: white;
+    background: linear-gradient(
+        135deg,
+        rgba(14,165,233,0.8),
+        rgba(56,189,248,0.9)
+    );
+
+    box-shadow:
+        0 0 45px rgba(14,165,233,0.6),
+        inset 0 0 20px rgba(255,255,255,0.2);
+
+    transform: rotate(90deg) scale(1.08);
+}
+#fab-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background-image:
+        linear-gradient(rgba(14,165,233,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14,165,233,0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+/* Dropdown Menu */
+#fab-menu {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 220px;
+
+    opacity: 0;
+    transform: scale(0.6) translateY(10px);
+    transform-origin: bottom right;
+    pointer-events: none;
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.35s cubic-bezier(.34,1.56,.64,1);
+}
+
+/* Open state */
+#fab-menu.open {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
+}
+
+/* Menu Items */
+.fab-item {
+    background: rgba(15,23,42,0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--primary);
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+
+    opacity: 0;
+    transform: translateY(10px);
+    transition: 
+        opacity 0.25s ease,
+        transform 0.25s ease,
+        background 0.25s ease;
+}
+
+/* When menu open → animate items */
+#fab-menu.open .fab-item {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Stagger delay */
+#fab-menu.open .fab-item:nth-child(1) { transition-delay: 0.05s; }
+#fab-menu.open .fab-item:nth-child(2) { transition-delay: 0.1s; }
+#fab-menu.open .fab-item:nth-child(3) { transition-delay: 0.15s; }
+#fab-menu.open .fab-item:nth-child(4) { transition-delay: 0.2s; }
+
+
+.fab-item:hover {
+    background: var(--primary);
+    color: var(--bg);
+}
+
+.fab-item.danger {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.fab-item.danger:hover {
+    background: var(--danger);
+    color: white;
+}
+
+
+dashboard::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -373,7 +574,7 @@ button {
     font-size: 11px;
     font-family: 'JetBrains Mono', monospace;
     border: 1px solid var(--border);margin-bottom:10px;
-    transition: 0.2s;gap:6px;min-widht:5px;
+    transition: 0.2s;gap:6px;min-widhth:5px;
     /* This makes the card narrow and clean */
 }/* Color Coding for specific denominations */
 .denom-tile[data-v="500"] { border: 3px solid #fbbf24; } /* Gold */
@@ -817,88 +1018,6 @@ tbody {
 }
 
 
-/* =========================================
-   RESPONSIVE MOBILE OPTIMIZATION
-========================================= */
-
-@media (max-width: 1200px) {
-    .dashboard {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-
-    body {
-        padding: 14px;
-    }
-
-    /* Dashboard becomes 1 column */
-    .dashboard {
-        grid-template-columns: 1fr;
-        gap: 14px;
-    }
-
-    .stat-card {
-        padding: 18px;
-    }
-
-    /* Toolbar becomes vertical stack */
-    .toolbar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-        padding: 14px;
-        position: static; /* disable sticky on mobile */
-    }
-
-    .controls-group {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-    }
-
-    .controls-group select,
-    .controls-group input,
-    .controls-group button {
-        width: 100% !important;
-    }
-
-    /* Buttons full width */
-    .btn-future,
-    .btn-future-danger {
-        width: 100%;
-        justify-content: center;
-    }
-
-    /* Reduce font sizes slightly */
-    .stat-card .value {
-        font-size: 22px;
-    }
-
-    .pill-val {
-        font-size: 13px;
-    }
-
-    /* Forms menu adjust */
-    #forms-menu {
-        width: 90%;
-        left: 5% !important;
-    }
-
-    /* Table container better mobile behavior */
-    .table-wrap {
-        border-radius: 14px;
-    }
-
-    #mainDataTable {
-        min-width: 900px; /* allow horizontal scroll */
-    }
-
-    .table-search-box {
-        flex-direction: column;
-        gap: 12px;
-        align-items: stretch;
 
     </style>
 </head>
@@ -942,8 +1061,6 @@ tbody {
        readonly>
             <button class="btn-future" onclick="loadMain()">Execute Search</button>
             <button class="btn-future" onclick="loadFullStatement()">Full History</button>
-	    <button class="btn-future" onclick="toggleFormsMenu(event)">Forms</button>
-	    <button class="btn-future-danger" onclick="logout()">Logout</button>
         </div>
         <div id="action-buttons-holder" style="display: flex; gap: 8px;"></div>
     </div>
@@ -1311,23 +1428,56 @@ async function viewNamedRange(rangeName) {
 
 
 
- function updateToolbarMetrics(headers, rows) {
-  const inflowEl = document.getElementById('bar-inflow');
-  const outflowEl = document.getElementById('bar-outflow');
+function updateToolbarMetrics(headers, rows) {
 
-  if (!inflowEl || !outflowEl) return; // ← PREVENT CRASH
+    const inflowEl = document.getElementById('bar-inflow');
+    const outflowEl = document.getElementById('bar-outflow');
+    if (!inflowEl || !outflowEl) return;
 
-  let inflow = 0, outflow = 0;
-  const inIdx = headers.findIndex(h => /deposit amount/i.test(h));
-  const outIdx = headers.findIndex(h => /withdrawn amount/i.test(h));
+    const inflowKeywords = [
+        "deposit",
+        "received",
+        "credit",
+        "incoming"
+    ];
 
-  rows.forEach(row => {
-    if (inIdx !== -1) inflow += parseFloat(row[inIdx]?.toString().replace(/[^0-9.-]/g, "") || 0);
-    if (outIdx !== -1) outflow += parseFloat(row[outIdx]?.toString().replace(/[^0-9.-]/g, "") || 0);
-  });
+    const outflowKeywords = [
+        "withdrawn",
+        "given",
+        "debit",
+        "paid",
+        "expense"
+    ];
 
-  inflowEl.innerText = '₹' + inflow.toLocaleString('en-IN');
-  outflowEl.innerText = '₹' + outflow.toLocaleString('en-IN');
+    const headerLower = headers.map(h => h.toLowerCase());
+
+    const inflowIndexes = headerLower
+        .map((h, i) => inflowKeywords.some(k => h.includes(k)) ? i : -1)
+        .filter(i => i !== -1);
+
+    const outflowIndexes = headerLower
+        .map((h, i) => outflowKeywords.some(k => h.includes(k)) ? i : -1)
+        .filter(i => i !== -1);
+
+    let inflow = 0;
+    let outflow = 0;
+
+    rows.forEach(row => {
+        inflowIndexes.forEach(i => {
+            inflow += parseFloat(
+                (row[i] || "0").toString().replace(/[^0-9.-]/g, "")
+            ) || 0;
+        });
+
+        outflowIndexes.forEach(i => {
+            outflow += parseFloat(
+                (row[i] || "0").toString().replace(/[^0-9.-]/g, "")
+            ) || 0;
+        });
+    });
+
+    inflowEl.innerText = formatINR(inflow);
+    outflowEl.innerText = formatINR(outflow);
 }
 
     function formatTacticalDate(dateStr) {
@@ -1393,12 +1543,72 @@ function setProcessing(isProcessing, message = "EXECUTING...") {
     }
 }
   
+//sort by dates logic
+function sortRowsByDate(headers, rows) {
+    const dateIndex = headers.findIndex(h => /date/i.test(h));
+    if (dateIndex === -1) return rows;
 
-   
+    return rows.sort((a, b) => {
+        const parseDate = (val) => {
+            if (!val) return 0;
+
+            // Handle formats like:
+            // 2026-02-08
+            // 08-02-2026
+            // 8-Feb-2026
+            // 08-Feb-2026
+
+            const cleaned = val.toString().trim();
+
+            // Try ISO first
+            let d = new Date(cleaned);
+            if (!isNaN(d)) return d.getTime();
+
+            // Handle DD-MMM-YYYY (08-Feb-2026)
+            const parts = cleaned.split("-");
+            if (parts.length === 3) {
+                const months = {
+                    Jan:0, Feb:1, Mar:2, Apr:3, May:4, Jun:5,
+                    Jul:6, Aug:7, Sep:8, Oct:9, Nov:10, Dec:11
+                };
+
+                const day = parseInt(parts[0], 10);
+                const month = months[parts[1]];
+                const year = parseInt(parts[2], 10);
+
+                if (!isNaN(day) && month !== undefined && !isNaN(year)) {
+                    return new Date(year, month, day).getTime();
+                }
+            }
+
+            return 0;
+        };
+
+        return parseDate(a[dateIndex]) - parseDate(b[dateIndex]);
+    });
+}
+
+   function formatINR(value) {
+    if (value === null || value === undefined || value === "") return "";
+
+    const num = parseFloat(value.toString().replace(/[^0-9.-]/g, ""));
+    if (isNaN(num)) return value;
+
+    return "₹" + num.toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
 
     // Shared table rendering logic
 function renderTable(headers, rows) {
+
+    // 🔹 Sort by date first
+    rows = sortRowsByDate(headers, rows);
+
     const isRegistry = currentTableMode === 'registry';
+
     let idColIdx = headers.findIndex(h => /id|ref_id|reference/i.test(h));
     const dataRefIdx = headers.findIndex(h => /ref_no/i.test(h));
     if (idColIdx === -1) idColIdx = headers.length - 1;
@@ -1411,15 +1621,22 @@ function renderTable(headers, rows) {
                 <span id="rowCount" style="font-family:'JetBrains Mono'; font-size:11px; color:var(--text-muted);">READY_</span>
             </div>
             <div style="display: flex; gap: 15px;">
-                <div class="metric-pill"><span class="pill-label">Inflow</span><span class="pill-val" id="bar-inflow" style="color: var(--success);">₹0</span></div>
-                <div class="metric-pill"><span class="pill-label">Outflow</span><span class="pill-val" id="bar-outflow" style="color: var(--danger);">₹0</span></div>
+                <div class="metric-pill">
+                    <span class="pill-label">Inflow</span>
+                    <span class="pill-val" id="bar-inflow" style="color: var(--success);">₹0</span>
+                </div>
+                <div class="metric-pill">
+                    <span class="pill-label">Outflow</span>
+                    <span class="pill-val" id="bar-outflow" style="color: var(--danger);">₹0</span>
+                </div>
             </div>
         </div>
+
         <div class='table-wrap' id="tableWrap">
            <table id="mainDataTable" style="width: 100%; min-width: 1300px; table-layout: auto;">
                 <thead>
                     <tr>
-                        ${headers.map((h, i) => {
+                        ${headers.map((h) => {
                             const fieldName = h.toLowerCase().replace(/\s+/g, '_');
                             return `
                             <th data-col-name="${fieldName}">
@@ -1427,26 +1644,38 @@ function renderTable(headers, rows) {
                                     <span>${h}</span>
                                     <span class="filter-trigger" onclick="toggleFilterDropdown(event, '${fieldName}')">▼</span>
                                 </div>
-                               <div id="filter-dropdown-${fieldName}" class="filter-dropdown">
+                                <div id="filter-dropdown-${fieldName}" class="filter-dropdown">
+                                    <input type="text"
+                                           class="filter-search-input"
+                                           placeholder="Search..."
+                                           onkeyup="filterColumnOptions('${fieldName}', this.value)">
+                                    <div id="options-container-${fieldName}" 
+                                         class="filter-options-container"></div>
+                                    <div style="margin-top:8px; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px;">
 
-    <!-- 🔎 Search inside filter -->
-    <input type="text"
-       class="filter-search-input"
-       placeholder="Search..."
-       onkeyup="filterColumnOptions('${fieldName}', this.value)">
+    <div style="display:flex; gap:6px; margin-bottom:6px;">
+        <button class="btn-future"
+                style="flex:1; font-size:10px; height:30px;"
+                onclick="selectAllOptions('${fieldName}')">
+            SELECT ALL
+        </button>
 
+        <button class="btn-future"
+                style="flex:1; font-size:10px; height:30px;"
+                onclick="invertSelection('${fieldName}')">
+            SHOW UNSELECTED
+        </button>
+    </div>
 
-    <div id="options-container-${fieldName}" 
-         class="filter-options-container"></div>
-
-    <div style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px; display:flex; gap:6px;">
+    <div style="display:flex; gap:6px;">
         <button class="btn-blue"
-                style="flex:1; font-size:10px; height:32px; justify-content:center;"
+                style="flex:1; font-size:10px; height:32px;"
                 onclick="confirmFilter('${fieldName}')">
             CONFIRM
         </button>
-        <button class="btn-accent"
-                style="flex:1; font-size:10px; height:32px; justify-content:center;"
+
+        <button class="btn-future-danger"
+                style="flex:1; font-size:10px; height:32px;"
                 onclick="clearFilter('${fieldName}')">
             RESET
         </button>
@@ -1454,44 +1683,111 @@ function renderTable(headers, rows) {
 
 </div>
 
+                                </div>
                             </th>`;
                         }).join('')}
                     </tr>
                 </thead>
+
                 <tbody>
                     ${rows.map(row => {
+
                         const rawId = row[idColIdx];
-                        const rowId = (rawId !== undefined && rawId !== null) ? String(rawId).trim() : "";
-                       const clickAction = `handleRowClick(this)`;
+                        const rowId = rawId ? String(rawId).trim() : "";
+                        const clickAction = `handleRowClick(this)`;
 
                         return `
-                            <tr class="data-row" data-id="${rowId}" onclick="${clickAction}">
-                                ${row.map((cell, idx) => {
-                                    const fieldName = headers[idx].toLowerCase().replace(/\s+/g, '_');
-                                    let content = cell ?? '';
-                                    const isIdCol = idx === idColIdx;
-                                    const isRefData = idx === dataRefIdx;
-                                    const isDate = /date/i.test(headers[idx]);
-                                    const isAmount = /amount|withdrawn|deposit|total/i.test(headers[idx]);
+                        <tr class="data-row" data-id="${rowId}" onclick="${clickAction}">
+                            ${row.map((cell, idx) => {
 
-                                    if (isIdCol && !isRegistry) content = `<span class="id-badge">${cell}</span>`;
-                                    else if (isRefData) content = `<span class="ref-data">${cell}</span>`;
-                                    else if (isDate) content = formatTacticalDate(cell);
+                                const headerName = headers[idx].toLowerCase();
+                                const fieldName = headers[idx].toLowerCase().replace(/\s+/g, '_');
 
-                                    return `<td data-field="${fieldName}" style="${isAmount ? 'font-family:JetBrains Mono; font-weight:600;' : ''} ${isIdCol ? 'min-width:140px;' : ''} text-align: center;">${content}</td>`;
-                                }).join('')}
-                            </tr>`;
+                                const isIdCol = idx === idColIdx;
+                                const isRefData = idx === dataRefIdx;
+                                const isDate = /date/i.test(headers[idx]);
+
+                                // 💚 Inflow keywords
+                                const inflowKeywords = [
+                                    "deposit",
+                                    "received",
+                                    "credit",
+                                    "inflow",
+                                    "incoming"
+                                ];
+
+                                // ❤️ Outflow keywords
+                                const outflowKeywords = [
+                                    "withdrawn",
+                                    "given",
+                                    "debit",
+                                    "paid",
+                                    "outflow",
+                                    "expense"
+                                ];
+
+                                const isInflow = inflowKeywords.some(k => headerName.includes(k));
+                                const isOutflow = outflowKeywords.some(k => headerName.includes(k));
+                                const isAmount = isInflow || isOutflow || 
+                                                 headerName.includes("total") || 
+                                                 headerName.includes("balance");
+
+                                let content = cell ?? '';
+				if (isAmount) {
+ 				   content = formatINR(cell);
+				}
+                                if (isIdCol && !isRegistry) {
+                                    content = `<span class="id-badge">${cell}</span>`;
+                                }
+                                else if (isRefData) {
+                                    content = `<span class="ref-data">${cell}</span>`;
+                                }
+                                else if (isDate) {
+                                    content = formatTacticalDate(cell);
+                                }
+
+                                let amountStyle = "";
+
+                                if (isInflow) {
+                                    amountStyle = "color: var(--success); font-family:JetBrains Mono; font-weight:700;";
+                                } 
+                                else if (isOutflow) {
+                                    amountStyle = "color: var(--danger); font-family:JetBrains Mono; font-weight:700;";
+                                }
+                                else if (isAmount) {
+                                    amountStyle = "font-family:JetBrains Mono; font-weight:600;";
+                                }
+
+                                return `
+                                    <td data-field="${fieldName}"
+                                        style="${amountStyle} ${isIdCol ? 'min-width:140px;' : ''} text-align:center;">
+                                        ${content}
+                                    </td>`;
+                            }).join('')}
+                        </tr>`;
                     }).join('')}
                 </tbody>
-            </table>
+           </table>
         </div>
     </div>`;
 
     document.getElementById('displayArea').innerHTML = html;
+
     setTimeout(adjustTableHeight, 50);
     populateFilterOptions(headers, rows);
     recalculateMetricsFromVisible();
 }
+
+function selectAllOptions(fieldName) {
+    document.querySelectorAll(`.filter-option[data-field-target="${fieldName}"]`)
+        .forEach(opt => opt.classList.add('selected'));
+}
+
+function invertSelection(fieldName) {
+    document.querySelectorAll(`.filter-option[data-field-target="${fieldName}"]`)
+        .forEach(opt => opt.classList.toggle('selected'));
+}
+
 
 function filterColumnOptions(fieldName, query) {
     query = query.toLowerCase().trim();
@@ -1726,41 +2022,68 @@ function applyTableFilter() {
 }
 
 // Optional: Dynamic metrics update while filtering
-function recalculateMetricsFromSelected() {
+function recalculateMetricsFromVisible() {
+
     const table = document.getElementById('mainDataTable');
     if (!table) return;
 
-    const selectedRows = Array.from(table.getElementsByClassName('selected'));
-    
-    // 🔥 FIX: If no rows are selected, fallback to calculating total visible data
-    if (selectedRows.length === 0) {
-        recalculateMetricsFromVisible();
-        return;
-    }
+    const rows = Array.from(table.querySelectorAll('.data-row'));
+    const headers = Array.from(table.querySelectorAll('th'))
+        .map(th => th.innerText.toLowerCase());
 
-    const headers = Array.from(table.querySelectorAll('th')).map(th => th.innerText.toLowerCase());
-    const inIdx = headers.findIndex(h => h.includes('deposit'));
-    const outIdx = headers.findIndex(h => h.includes('withdrawn'));
+    const inflowKeywords = [
+        "deposit",
+        "received",
+        "credit",
+        "incoming"
+    ];
 
-    let inflow = 0, outflow = 0;
+    const outflowKeywords = [
+        "withdrawn",
+        "given",
+        "debit",
+        "paid",
+        "expense"
+    ];
 
-    selectedRows.forEach(row => {
-        const cells = row.getElementsByTagName('td');
-        if (inIdx !== -1) {
-            let val = cells[inIdx].innerText.replace(/[^0-9.-]/g, "");
-            inflow += parseFloat(val) || 0;
-        }
-        if (outIdx !== -1) {
-            let val = cells[outIdx].innerText.replace(/[^0-9.-]/g, "");
-            outflow += parseFloat(val) || 0;
+    const inflowIndexes = headers
+        .map((h, i) => inflowKeywords.some(k => h.includes(k)) ? i : -1)
+        .filter(i => i !== -1);
+
+    const outflowIndexes = headers
+        .map((h, i) => outflowKeywords.some(k => h.includes(k)) ? i : -1)
+        .filter(i => i !== -1);
+
+    let inflow = 0;
+    let outflow = 0;
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+        if (row.style.display !== "none") {
+
+            visibleCount++;
+
+            const cells = row.querySelectorAll('td');
+
+            inflowIndexes.forEach(i => {
+                inflow += parseFloat(
+                    (cells[i]?.innerText || "0").replace(/[^0-9.-]/g, "")
+                ) || 0;
+            });
+
+            outflowIndexes.forEach(i => {
+                outflow += parseFloat(
+                    (cells[i]?.innerText || "0").replace(/[^0-9.-]/g, "")
+                ) || 0;
+            });
         }
     });
 
-    // Update UI
-    document.getElementById('bar-inflow').innerText = '₹' + inflow.toLocaleString('en-IN');
-    document.getElementById('bar-outflow').innerText = '₹' + outflow.toLocaleString('en-IN');
-    document.getElementById('rowCount').innerText = `${selectedRows.length} RECORDS SELECTED`;
+    document.getElementById('bar-inflow').innerText = formatINR(inflow);
+    document.getElementById('bar-outflow').innerText = formatINR(outflow);
+    document.getElementById('rowCount').innerText = `MATCH: ${visibleCount}`;
 }
+
 
 
 
@@ -1867,21 +2190,26 @@ async function deleteRecords() {
 
         // Small delay for Google Sheets to finish internal calculations
         setTimeout(async () => {
-            // Refresh the dashboard data
-            await initializeDashboard();
-            
-            // If we were looking at a specific date range, refresh that list
-            const s = document.getElementById('start').value;
-            const e = document.getElementById('end').value;
-            if (s && e) {
-                await loadMain();
-            } else {
-                document.getElementById('displayArea').innerHTML = "";
-            }
-            
-            setProcessing(false);
-            document.getElementById('status').innerText = "TERMINAL SYNCED.";
-        }, 1500);
+    try {
+
+        await initializeDashboard();
+
+        if (selectedStart && selectedEnd) {
+            await loadMain();
+        } else {
+            document.getElementById('displayArea').innerHTML = "";
+        }
+
+        document.getElementById('status').innerText = "TERMINAL SYNCED.";
+
+    } catch (err) {
+        console.error("Resync Error:", err);
+        document.getElementById('status').innerText = "SYNC ERROR";
+    } finally {
+        setProcessing(false);
+    }
+
+}, 1500);
 
     } catch(e) { 
         console.error("Purge Error:", e);
@@ -1892,10 +2220,7 @@ async function deleteRecords() {
 }
 
 
-    function accessDenied() {
-        document.body.innerHTML = `<div style="background:var(--bg); height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; font-family:'JetBrains Mono';"><h1>403</h1><p>ACCESS RESTRICTED</p><button class="btn-blue" onclick="location.reload()">RE-AUTHENTICATE</button></div>`;
-        window.stop();
-    }
+   
   // Remove the old toggleButtons function entirely as we don't need fixed buttons anymore
 function toggleButtons() {
     // Left empty: buttons are now inside the Context Menu
@@ -1975,37 +2300,70 @@ async function copyRowToClipboard(rowElement) {
     }
 }
 
-function recalculateMetricsFromVisible() {
-    const table = document.getElementById('mainDataTable');
-    if (!table) return;
+let wasDragged = false;
 
-    const rows = Array.from(table.querySelectorAll('.data-row'));
-    const headers = Array.from(table.querySelectorAll('th')).map(th => th.innerText.toLowerCase());
-    
-    const inIdx = headers.findIndex(h => h.includes('deposit'));
-    const outIdx = headers.findIndex(h => h.includes('withdrawn'));
+function toggleFab() {
 
-    let inflow = 0, outflow = 0, visibleCount = 0;
+    const menu = document.getElementById("fab-menu");
+    const button = document.getElementById("fab-button");
+    const fabContainer = document.getElementById("fab-container");
 
-    rows.forEach(row => {
-        if (row.style.display !== "none") {
-            visibleCount++;
-            const cells = row.getElementsByTagName('td');
-            if (inIdx !== -1) {
-                let val = cells[inIdx].innerText.replace(/[^0-9.-]/g, "");
-                inflow += parseFloat(val) || 0;
-            }
-            if (outIdx !== -1) {
-                let val = cells[outIdx].innerText.replace(/[^0-9.-]/g, "");
-                outflow += parseFloat(val) || 0;
-            }
+    if (!menu || !button || !fabContainer) return;
+
+    const isOpening = !menu.classList.contains("open");
+
+    // Get position
+    const rect = fabContainer.getBoundingClientRect();
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    // Reset all directional classes first
+    menu.classList.remove(
+        "open-left",
+        "open-right",
+        "open-up",
+        "open-down"
+    );
+
+    if (isOpening) {
+
+        // ---- HORIZONTAL LOGIC ----
+        if (rect.left < screenWidth / 2) {
+            menu.classList.add("open-right");
+        } else {
+            menu.classList.add("open-left");
         }
-    });
 
-    document.getElementById('bar-inflow').innerText = '₹' + inflow.toLocaleString('en-IN');
-    document.getElementById('bar-outflow').innerText = '₹' + outflow.toLocaleString('en-IN');
-    document.getElementById('rowCount').innerText = `MATCH: ${visibleCount}`;
+        // ---- VERTICAL LOGIC ----
+        if (rect.top < screenHeight / 2) {
+            menu.classList.add("open-down");
+        } else {
+            menu.classList.add("open-up");
+        }
+
+        // Small delay ensures CSS direction applies before animation
+        requestAnimationFrame(() => {
+            menu.classList.add("open");
+            button.classList.add("active");
+        });
+
+    } else {
+
+        menu.classList.remove("open");
+        button.classList.remove("active");
+
+    }
 }
+document.addEventListener("click", function(e) {
+    const fabContainer = document.getElementById("fab-container");
+    const fabMenu = document.getElementById("fab-menu");
+
+    if (!fabContainer.contains(e.target)) {
+        fabMenu.classList.remove("open");
+    }
+});
+
+
 function adjustTableHeight() {
     const tableWrap = document.getElementById("tableWrap");
     if (!tableWrap) return;
@@ -2250,23 +2608,155 @@ function logout() {
     sessionStorage.removeItem("session_token");
     showLogoutScreen();
 }
+// ===== ELITE FAB SYSTEM =====
+window.addEventListener("load", function () {
+
+    const fabContainer = document.getElementById("fab-container");
+    const fabButton = document.getElementById("fab-button");
+    const fabMenu = document.getElementById("fab-menu");
+
+    if (!fabContainer) return;
+
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+    let lastScroll = 0;
+    let longPressTimer = null;
+    let wasDragged = false;
+
+    // Restore position
+    const savedPos = localStorage.getItem("fab_position");
+    if (savedPos) {
+        const { x, y } = JSON.parse(savedPos);
+        fabContainer.style.left = x + "px";
+        fabContainer.style.top = y + "px";
+        fabContainer.style.right = "auto";
+        fabContainer.style.bottom = "auto";
+        fabContainer.style.position = "fixed";
+    }
+
+    // ===== DRAG START =====
+    function startDrag(e) {
+        isDragging = true;
+        wasDragged = false;
+
+        const rect = fabContainer.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        offsetX = clientX - rect.left;
+        offsetY = clientY - rect.top;
+
+        fabContainer.style.transition = "none";
+    }
+
+    function onDrag(e) {
+        if (!isDragging) return;
+
+        wasDragged = true;
+
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        let newX = clientX - offsetX;
+        let newY = clientY - offsetY;
+
+        const maxX = window.innerWidth - fabContainer.offsetWidth;
+        const maxY = window.innerHeight - fabContainer.offsetHeight;
+
+        newX = Math.max(0, Math.min(newX, maxX));
+        newY = Math.max(0, Math.min(newY, maxY));
+
+        fabContainer.style.left = newX + "px";
+        fabContainer.style.top = newY + "px";
+        fabContainer.style.right = "auto";
+        fabContainer.style.bottom = "auto";
+        fabContainer.style.position = "fixed";
+    }
+
+    function stopDrag() {
+        if (!isDragging) return;
+        isDragging = false;
+
+        // 🧲 SNAP TO EDGE
+        const rect = fabContainer.getBoundingClientRect();
+        const midpoint = window.innerWidth / 2;
+        const snapX = rect.left < midpoint ? 20 : window.innerWidth - rect.width - 20;
+
+        fabContainer.style.transition = "all 0.3s cubic-bezier(.34,1.56,.64,1)";
+        fabContainer.style.left = snapX + "px";
+
+        localStorage.setItem("fab_position", JSON.stringify({
+            x: snapX,
+            y: rect.top
+        }));
+    }
+
+    // Desktop
+    fabContainer.addEventListener("mousedown", startDrag);
+    document.addEventListener("mousemove", onDrag);
+    document.addEventListener("mouseup", stopDrag);
+
+    // Mobile Drag
+    fabContainer.addEventListener("touchstart", startDrag, { passive: true });
+    document.addEventListener("touchmove", onDrag, { passive: true });
+    document.addEventListener("touchend", stopDrag);
+
+    // 🎯 LONG PRESS TO OPEN MENU (Mobile)
+    fabButton.addEventListener("touchstart", function (e) {
+        longPressTimer = setTimeout(() => {
+            fabMenu.classList.toggle("open");
+        }, 500);
+    });
+
+    fabButton.addEventListener("touchend", function () {
+        clearTimeout(longPressTimer);
+    });
+
+    // 👻 AUTO HIDE ON SCROLL
+    window.addEventListener("scroll", function () {
+        const currentScroll = window.scrollY;
+
+        if (currentScroll > lastScroll) {
+            fabContainer.style.transform = "translateY(120px)";
+        } else {
+            fabContainer.style.transform = "translateY(0)";
+        }
+
+        lastScroll = currentScroll;
+    });
+
+});
+
+
 </script>
+
 <div id="custom-context-menu"></div>
-<div id="forms-menu" style="
-    position:absolute;
-    display:none;
-    background:rgba(15,23,42,0.95);
-    backdrop-filter:blur(12px);
-    border:1px solid var(--primary);
-    border-radius:12px;
-    padding:10px 0;
-    min-width:220px;
-    box-shadow:0 20px 40px rgba(0,0,0,0.8);
-    z-index:10000;
-">
-    <div class="menu-item" onclick="openFormLink('monthly')">📊 Monthly Transaction</div>
-    <div class="menu-item" onclick="openFormLink('loan')">💳 Loan Entry</div>
-    <div class="menu-item" onclick="openFormLink('self')">🔁 Self Transfer</div>
+<!-- ===== Floating Action Button ===== -->
+<div id="fab-container">
+
+    <div id="fab-menu">
+        <div class="fab-item" onclick="openFormLink('monthly')">
+            📊 Monthly Transaction
+        </div>
+
+        <div class="fab-item" onclick="openFormLink('loan')">
+            💳 Loan Entry
+        </div>
+
+        <div class="fab-item" onclick="openFormLink('self')">
+            🔁 Self Transfer
+        </div>
+
+        <div class="fab-item danger" onclick="logout()">
+            🔐 Logout
+        </div>
+    </div>
+
+    <div id="fab-button" onclick="toggleFab()">
+        ☰
+    </div>
+
 </div>
 
 </body>
